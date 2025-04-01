@@ -100,11 +100,3 @@ path: ~/klipper-toolchanger
 origin: https://github.com/viesturz/klipper-toolchanger.git
 managed_services: klipper
 primary_branch: main
-
-[update_manager ktamv]]
-type: git_repo
-path: ~/kTAMV
-origin: https://github.com/TypQxQ/kTAMV.git
-primary_branch: main
-install_script: install.sh
-managed_services: klipper
