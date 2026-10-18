@@ -60,4 +60,4 @@ During `QUAD_GANTRY_LEVEL` with Toolhead 1, probing the rear-left corner (`X=50,
 
 ### Resolution:
 1. **Hardware Fix:** Planned installation of overhead metal tension wire to maintain consistent cable tension across both toolheads.
-2. **Software Bridge:** Relaxing `samples_tolerance` on `[tool_probe T1]` from `0.006` to `0.008 mm` (8 microns) eliminates retry loops while preserving sub-10-micron precision.
+2. **Software Bridge:** Standardized `samples_tolerance: 0.008 mm` (8 microns) on both `[tool_probe T0]` and `[tool_probe T1]`, completely eliminating retry loops while preserving sub-10-micron precision.

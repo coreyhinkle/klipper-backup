@@ -55,15 +55,31 @@ A real-world test script was executed directly on the printer, positioning the t
 
 | Speed Profile | Pure Z Travel Time (590mm round trip) | Measured Total Toolchange Time | Time Saved per Toolchange | 500-Swap Print Total |
 |:---|:---|:---|:---|:---|
-| **15 mm/s** (Stock Default) | 39.2s | $\approx 46.2\text{ s}$ | — | **6.4 hours** |
-| **35 mm/s** (Conservative) | 16.8s | **23.53 s** | **22.7s saved** | **3.26 hours** |
-| **50 mm/s** (Current Production) | 11.8s | **20.11 s** | **26.1s saved** | **2.79 hours** |
+| **15 mm/s Z / Stock XY** | 39.2s | $\approx 46.2\text{ s}$ | — | **6.4 hours** |
+| **35 mm/s Z / Stock XY** | 16.8s | **23.53 s** | **22.7s saved** | **3.26 hours** |
+| **50 mm/s Z / Stock XY** | 11.8s | **20.11 s** | **26.1s saved** | **2.79 hours** |
+| **50 mm/s Z / 400 mm/s XY (15k fast)** | 11.8s | **18.90 s** | **27.3s saved** | **2.62 hours** |
 
-* Moving from stock 15 mm/s to 50 mm/s **cuts toolchange time by 56%**, saving **over 3.6 hours** on a 500-toolchange multi-color print.
+* Moving from stock defaults to tuned production speeds **slashed toolchange time from 46.2s to 18.90s (59% reduction)**, saving **3.78 hours** on a 500-toolchange multi-color print.
 
 ---
 
-## 4. Normal Print Quality: Why High Z Speeds Do Not Affect Printing
+## 4. CoreXY Horizontal Kinematics Qualification (400 mm/s @ 5000 mm/s²)
+
+### Driver & Motor Configuration:
+* **Steppers:** LDO-42STH48-2004MAH (CoreXY A/B motors) powered by TMC2209 drivers on 24V bus.
+* **Driver Current:** Bumped from stock `0.80 A` $\to$ **`1.00 A`** (`run_current: 1.0` in [`printer.cfg`](../printer_data/config/printer.cfg#L76)) to guarantee torque margin at high accelerations.
+* **Rapid Transit Speed:** Bumped `params_fast_speed` from `10000 mm/min` ($166\text{ mm/s}$) $\to$ **`15000 mm/min`** ($250\text{ mm/s}$) in [`toolchanger-2.4.cfg`](../printer_data/config/tapchanger/toolchanger-2.4.cfg#L5).
+
+### Empirical Rapid Torture Move Test:
+An automated CoreXY stress routine was executed across the full 350 mm build volume:
+* **Move Profile:** 8 consecutive corner-to-corner diagonal rapid moves ($X, Y: [30, 30] \leftrightarrow [320, 320]$) at `400 mm/s` with `5000 mm/s²` acceleration.
+* **Execution Time:** **9.47 seconds** total.
+* **Verification:** Immediate `G28 X` and `G28 Y` sensorless homing confirmed zero stall-guards or step loss across both axes.
+
+---
+
+## 5. Normal Print Quality: Why High Z Speeds Do Not Affect Printing
 
 A common concern is that increasing `max_z_velocity` will degrade print quality during regular layers. However, Z is **100% acceleration-limited** during printing:
 * **Layer Change:** $\Delta Z = 0.20\text{ mm}$.
@@ -75,7 +91,7 @@ The Z axis physically never exceeds 10 mm/s during normal printing moves. The 50
 
 ---
 
-## 5. Quad Gantry Leveling (QGL) Qualification & Cross-Tool Agreement
+## 6. Quad Gantry Leveling (QGL) Qualification & Cross-Tool Agreement
 
 ### Verification at 50 mm/s
 Following the switch to 50 mm/s, full homing and QGL was verified:
