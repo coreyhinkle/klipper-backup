@@ -31,6 +31,7 @@ This repository contains the Klipper configuration for a **Voron 2.4 (350mm)** (
     - **Hotend:** Voron / V6 clone hotend & nozzle (from Formbot kit) with PT1000/PT100 via MAX31865 (`0.4mm` nozzle).
     - **Extruder:** Clockwork 2 (CW2) with Formbot kit / Amazon (`B09WQYHBZY`) BMG dual-gear hardware (`rotation_distance: 22.9`, `gear_ratio: 50:10`), TMC2209 (`0.65A`).
     - **Probe:** OptoTap (`^EBBCan:gpio22`, `z_offset: -0.80`).
+    - **Physical Harness/Umbilical:** Overhead wire/umbilical currently has slight slack compared to T0 (user plans to wire with steel tension wire to keep toolhead cables taut). This physical slack directly correlates with the minor ~2.5 µm OptoTap trigger variance observed at the far rear-left bed corner (`X=50, Y=275`).
 - **Accessories:** Nevermore carbon filter (`PF7`), BTT Mini12864 RGB LCD display, Skirt & Exhaust fans.
 - **Communication (CAN Bus):**
   - Bitrate: `1000000` (1M), managed by `systemd-networkd` (`/etc/systemd/network/25-can.network`).
