@@ -1,27 +1,40 @@
-# Klipper-Backup 💾 
-Klipper backup script for manual or automated GitHub backups 
+# Voron 2.4 (350mm) StealthChanger 🚀
 
-This backup is provided by [Klipper-Backup](https://github.com/Staubgeborener/klipper-backup).
+Configuration repository and comprehensive technical documentation for a **Voron 2.4 (350mm)** multi-tool 3D printer running the **StealthChanger / TapChanger** system.
 
-## Hardware Notes
-- **Printer:** Voron 2.4 (350mm, Formbot base kit) with StealthChanger / TapChanger
-- **Host:** Raspberry Pi Compute Module 5 Rev 1.0 (Static IP: `192.168.0.46/22`)
-- **Mainboard:** BTT Manta M8P V2.0 (USB-to-CAN bridge, `1000000` bitrate, `txqueuelen 128`)
-- **Toolheads (StealthBurner + CW2 on both):**
-  - **T0 (`purple`, `sb-2.cfg`):** BTT EBB SB2209 RP2040, Phaetus Rapido HF (0.4mm nozzle; UHF upgrade kit available on hand), CW2 with BMG dual-gear kit (Amazon `B09WQYHBZY` / Formbot, `rotation_distance: 4.58`), OptoTap
-  - **T1 (`EBBCan`, `ebb-sb-rp2040.cfg`):** BTT EBB SB2209 RP2040 (from Formbot kit), Formbot Voron/V6 clone hotend & 0.4mm nozzle, CW2 with BMG dual-gear kit (Formbot / Amazon `B09WQYHBZY`, `rotation_distance: 22.9`, `gear_ratio: 50:10`), OptoTap
-- **CAN Bus Termination:** Toolhead 0 (T0) has the 120-ohm resistor jumper installed. Toolhead 1 (T1) does not. The Manta M8P mainboard also has the 120-ohm resistor jumper installed, resulting in the required 60-ohm total bus resistance.
+Automated backups are powered by [Klipper-Backup](https://github.com/Staubgeborener/klipper-backup).
 
-## Tuned Kinematics & Speed Benchmarks
-- **Z-Axis Speed & Acceleration:**
-  - `max_z_velocity: 50.0` mm/s (up from 15.0 mm/s stock default, 3.3x speedup)
-  - `max_z_accel: 500.0` mm/s² (up from 350.0 mm/s²)
-  - **Empirically Benchmarked:** Tested via high-speed vertical ladder routines (15 mm/s to 80 mm/s) using sub-micron optical OptoTap probe drift checks. Zero lost steps measured up to 65 mm/s.
-  - **Top-Frame Docks Optimization:** Because docks are mounted to the upper frame extrusions at $Z \approx 298–299\text{ mm}$, a toolchange during a print near the bed ($Z = 5\text{ mm}$) requires $\approx 590\text{ mm}$ of vertical round-trip travel.
-  - **Live Print-Height Stopwatch Benchmark:** A full toolchange from $Z = 5\text{ mm}$ to dock and back was clocked at **20.11s** at 50 mm/s (down from 23.53s at 35 mm/s and $\approx 46.2\text{s}$ at stock 15 mm/s)—saving **26.1 seconds per toolchange**.
-  - Fully verified with `QUAD_GANTRY_LEVEL` converging within 0.0050 mm.
-- **X/Y Speeds:**
-  - Currently conservative at `max_velocity: 300` mm/s, `max_accel: 3000` mm/s² (X/Y tuning roadmap: 400 mm/s @ 5000–6000 mm/s² with `run_current` raised to 1.0A).
+---
 
-## Documentation & Debugging Context
-See [`GEMINI.md`](./GEMINI.md) for full architecture notes, operational conventions, empirical benchmark tables, and resolved bug fixes (including toolchanger crash detection and offset transformation fixes).
+## 📖 Technical Documentation Index
+
+All technical documentation has been organized into modular guides:
+
+| Guide | Description |
+|:---|:---|
+| 🔧 **[Hardware & Electronics](docs/hardware.md)** | Machine specs, CM5 host, Manta M8P V2, Toolheads (T0 Rapido HF / T1 V6), OptoTap probes, and CAN bus star topology. |
+| 🚀 **[Kinematics & Speed Benchmarks](docs/benchmarks.md)** | Empirical Z ladder test (15–80 mm/s), 50 mm/s qualification, top-dock travel math, and live stopwatch toolchange benchmarks. |
+| 🔄 **[Toolchanger Architecture & Macros](docs/toolchanger.md)** | StealthChanger docking splines, top-frame park coordinates, macro suite (`T0`, `T1`, `UNSELECT_TOOL`), and operational conventions. |
+| 🛠️ **[Troubleshooting & Bug Fixes](docs/troubleshooting.md)** | Root-cause write-ups and permanent fixes for toolchange coordinate corruption, pickup crash detection timing, and probe sample drift. |
+| 📋 **[Tuning Roadmap & Audit Checklist](docs/roadmap.md)** | Completed milestones, active tasks (XY speed tuning to 400 mm/s, umbilical tension wire), and future optimizations. |
+
+---
+
+## ⚡ Quick Reference
+
+### Network & Access
+- **Printer Static IP:** `192.168.0.46/22` (persistent via NetworkManager `Chez CoreCats` profile)
+- **Web Interfaces:** Mainsail / Moonraker on port `80` / `7125` (`http://192.168.0.46`)
+- **CAN Bus:** Bitrate `1000000` (1 Mbps), `txqueuelen 128`
+
+### Tuned Kinematics Baseline
+- **`max_z_velocity`:** **`50.0 mm/s`** (3.3x speedup over 15 mm/s stock default)
+- **`max_z_accel`:** **`500.0 mm/s²`**
+- **Print-Height Toolchange Time:** **`20.11 seconds`** (measured live from $Z = 5\text{ mm}$ to top-frame docks and back, saving **26.1s per swap** over stock)
+- **`QUAD_GANTRY_LEVEL`:** Converges cleanly within **`0.0050 mm` (5 microns)** at 50 mm/s
+
+### Essential Toolchanger Commands
+- `T0` / `T1` — Select Toolhead 0 (Purple) or Toolhead 1 (Green)
+- `UNSELECT_TOOL` — Safely dock the active toolhead and return shuttle empty
+- `TOOL_ALIGN_START` / `TOOL_ALIGN_TEST` / `TOOL_ALIGN_DONE` — Interactive docking inspection suite
+- `QUAD_GANTRY_LEVEL` — Levels the flying gantry parallel to the bed (agrees within 0.2 µm across both tools)
