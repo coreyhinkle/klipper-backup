@@ -24,12 +24,12 @@ This repository contains the Klipper configuration for a **Voron 2.4 (350mm)** (
   - **Tool 0 (T0 - Reference Tool, Purple StealthBurner):**
     - **MCU:** BTT EBB SB2209 RP2040 (`[mcu purple]`, `canbus_uuid: 4445b54fe351`).
     - **Hotend:** Phaetus Rapido HF (currently in HF configuration; user also has an uninstalled UHF upgrade kit on hand) with PT1000/PT100 via MAX31865 (`0.4mm` nozzle).
-    - **Extruder:** Clockwork 2 (CW2) / BMG-geared stepper (`rotation_distance: 4.58` direct value, equivalent to `22.9` with `50:10` gear ratio), TMC2209 (`0.65A`).
+    - **Extruder:** Clockwork 2 (CW2) with Amazon BMG-style dual-gear kit (`B09WQYHBZY` / Formbot BMG clone gears, `rotation_distance: 4.58` direct value, equivalent to `22.9` with `50:10` gear ratio), TMC2209 (`0.65A`).
     - **Probe:** OptoTap (`^purple:gpio22`, `z_offset: -0.450`).
   - **Tool 1 (T1 - Green StealthBurner):**
     - **MCU:** BTT EBB SB2209 RP2040 (`[mcu EBBCan]`, `canbus_uuid: a7f6c7cc913a`, from original Formbot kit).
     - **Hotend:** Voron / V6 clone hotend & nozzle (from Formbot kit) with PT1000/PT100 via MAX31865 (`0.4mm` nozzle).
-    - **Extruder:** Clockwork 2 (CW2) with Formbot kit BMG clone gears (`rotation_distance: 22.9`, `gear_ratio: 50:10`), TMC2209 (`0.65A`).
+    - **Extruder:** Clockwork 2 (CW2) with Formbot kit / Amazon (`B09WQYHBZY`) BMG dual-gear hardware (`rotation_distance: 22.9`, `gear_ratio: 50:10`), TMC2209 (`0.65A`).
     - **Probe:** OptoTap (`^EBBCan:gpio22`, `z_offset: -0.80`).
 - **Accessories:** Nevermore carbon filter (`PF7`), BTT Mini12864 RGB LCD display, Skirt & Exhaust fans.
 - **Communication (CAN Bus):**
