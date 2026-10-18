@@ -14,11 +14,12 @@ This backup is provided by [Klipper-Backup](https://github.com/Staubgeborener/kl
 
 ## Tuned Kinematics & Speed Benchmarks
 - **Z-Axis Speed & Acceleration:**
-  - `max_z_velocity: 35.0` mm/s (up from 15.0 mm/s stock default, 2.3x speedup)
+  - `max_z_velocity: 50.0` mm/s (up from 15.0 mm/s stock default, 3.3x speedup)
   - `max_z_accel: 500.0` mm/s² (up from 350.0 mm/s²)
-  - **Empirically Benchmarked:** Tested via high-speed vertical ladder routines (15 mm/s to 80 mm/s) using sub-micron optical OptoTap probe drift checks. Zero lost steps measured up to 65 mm/s; first microstep slip onset at 70 mm/s (525 RPM), full back-EMF slip at 80 mm/s (600 RPM).
-  - **Selected Baseline (Option A):** 35 mm/s @ 500 mm/s² captures 90% of travel time reduction for typical Voron 2.4 Z-hops (e.g. 8mm toolchange hop takes 0.29s vs 0.26s at 50 mm/s) while preserving a robust 45% torque safety margin below the 24V back-EMF limit.
-  - Fully verified with `QUAD_GANTRY_LEVEL` converging within 0.0045 mm.
+  - **Empirically Benchmarked:** Tested via high-speed vertical ladder routines (15 mm/s to 80 mm/s) using sub-micron optical OptoTap probe drift checks. Zero lost steps measured up to 65 mm/s.
+  - **Top-Frame Docks Optimization:** Because docks are mounted to the upper frame extrusions at $Z \approx 298–299\text{ mm}$, a toolchange during a print near the bed ($Z = 5\text{ mm}$) requires $\approx 590\text{ mm}$ of vertical round-trip travel.
+  - **Live Print-Height Stopwatch Benchmark:** A full toolchange from $Z = 5\text{ mm}$ to dock and back was clocked at **20.11s** at 50 mm/s (down from 23.53s at 35 mm/s and $\approx 46.2\text{s}$ at stock 15 mm/s)—saving **26.1 seconds per toolchange**.
+  - Fully verified with `QUAD_GANTRY_LEVEL` converging within 0.0050 mm.
 - **X/Y Speeds:**
   - Currently conservative at `max_velocity: 300` mm/s, `max_accel: 3000` mm/s² (X/Y tuning roadmap: 400 mm/s @ 5000–6000 mm/s² with `run_current` raised to 1.0A).
 

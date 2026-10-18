@@ -97,19 +97,20 @@ To establish maximum reliable Z travel speeds without microstep loss or motor st
 | **70 mm/s** | 500 mm/s² | 525 RPM | `+0.0100 mm` | Marginal Slip (4 microsteps, back-EMF onset) |
 | **80 mm/s** | 500 mm/s² | 600 RPM | `+0.0125 mm` | Slip (5 microsteps, back-EMF torque loss) |
 
-### Physics & Selection of Production Baseline (Option A)
-- **Drive Mechanics:** The Voron 2.4 Z gantry uses an 80:16 (5:1) gear reduction with 20T pulleys (2mm GT2 pitch $\implies 40\text{ mm}$ belt pitch per revolution). A full revolution of the stepper advances the gantry:
-  $$\text{Lead} = \frac{40\text{ mm}}{5} = 8.0\text{ mm / rev}$$
-- **Back-EMF Limit on 24V:** On 24V stepper driver supplies (TMC2209), standard NEMA 17 steppers experience rapid torque decay above 500 RPM due to back-EMF approaching the rail voltage. At 70 mm/s (525 RPM), the motors lose enough holding torque during high-accel stops to slip microsteps.
-- **Diminishing Returns on Z-Hops:** For a typical 8.0 mm toolchange Z-hop:
-  - At $15\text{ mm/s}$ (stock): $\approx 0.58\text{ s}$
-  - At $35\text{ mm/s}$: $\approx 0.29\text{ s}$ (50% time reduction, **2.3x speedup**)
-  - At $50\text{ mm/s}$: $\approx 0.26\text{ s}$ (only 30 ms faster, but operates near high back-EMF)
-- **Production Baseline Selected:**
-  - `max_z_velocity: 35.0 mm/s`
-  - `max_z_accel: 500.0 mm/s²`
-  - **Safety Margin:** 45% torque buffer below the 65 mm/s slip boundary.
-  - **Verification:** `QUAD_GANTRY_LEVEL` converged cleanly to $< 0.0045\text{ mm}$ corner tolerance across all 4 steppers on pass 2.
+### Top-Frame Docks & Selection of 50 mm/s Production Setting
+- **Top-Mounted Dock Mechanics:** Unlike gantry-mounted toolchangers, the StealthChanger docks are mounted to the upper frame extrusions at $Z \approx 298–299\text{ mm}$ (`params_park_z`). When changing tools during a print near the bed ($Z \approx 5\text{ mm}$), the gantry must climb $\approx 295\text{ mm}$ to the dock, swap, and dive $\approx 295\text{ mm}$ back down—totalling **$\approx 590\text{ mm}$ of vertical travel per toolchange**.
+- **Empirical Toolchange Benchmark at Print Height ($Z = 5\text{ mm}$):**
+  - **15 mm/s (Stock):** $\approx 46.2\text{ s}$ total (39.2s in pure vertical travel).
+  - **35 mm/s (Option A):** Measured at **23.53 s** (16.8s pure vertical travel).
+  - **50 mm/s (Option B - Production Selected):** Measured live at **20.11 s** (11.8s pure vertical travel).
+  - **Net Gain:** 50 mm/s saves **26.1 seconds per toolchange** over stock (and an extra 3.42s over 35 mm/s). Over a 500-toolchange print, this saves **over 3.6 hours total**.
+- **Quality & QGL Convergence at 50 mm/s:**
+  - `QUAD_GANTRY_LEVEL` verified at 50 mm/s with `retry_tolerance: 0.0075 mm`.
+  - Converged to **0.0050 mm (5 microns)** across all four corners.
+- **Cross-Tool QGL Comparison (T0 vs T1):**
+  - Probed plane tilt adjustments between T0 OptoTap and T1 OptoTap were **virtually identical down to 0.2 microns**:
+    - Both converged with adjustments: `stepper_z = -0.000200 mm`, `stepper_z1 = -0.004500 mm`, `stepper_z2 = +0.000200 mm`, `stepper_z3 = +0.004500 mm`.
+    - Confirms exceptional rigidity and zero tilt skew between the two toolhead mounts.
 
 ---
 
@@ -119,8 +120,10 @@ See [`config_audit_and_todos.md`](file:///home/zyper/.gemini/antigravity-cli/bra
    - Stepper X and Y are currently conservative at `run_current: 0.8A`, `max_velocity: 300`, `max_accel: 3000`.
    - Planned tuning: Increase current to `1.0A`, test `max_velocity: 400 mm/s`, `max_accel: 5000–6000 mm/s²`.
 2. **Toolchanger Transit Speeds:**
-   - `params_fast_speed` is currently `10000` (166 mm/s); can be increased to `15000` (250 mm/s) for faster tool swap transit across the bed.
-3. **Configuration Cleanups:**
+   - `params_fast_speed` is currently `10000` (166 mm/s); can be increased to `15000–18000` (250–300 mm/s) for faster tool swap transit across the bed.
+3. **Cross-Tool Probe Repeatability Fine-Tuning:**
+   - On T1, `samples_tolerance: 0.006` caused retries when single-microstep variance (0.0025 mm) occurred on consecutive taps. Consider relaxing to `0.008 mm` to eliminate unnecessary sampling retries while maintaining sub-10-micron precision.
+4. **Configuration Cleanups:**
    - Remove duplicate `[resonance_tester]` in `ebb-sb-rp2040.cfg`.
    - Remove duplicate empty `[input_shaper]` in `printer.cfg`.
    - Equalize sensorless homing currents in `tapchanger/homing.cfg` (`_SENSORLESS_HOME_X`).
