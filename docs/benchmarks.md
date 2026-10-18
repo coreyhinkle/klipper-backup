@@ -64,18 +64,45 @@ A real-world test script was executed directly on the printer, positioning the t
 
 ---
 
-## 4. CoreXY Horizontal Kinematics Qualification (400 mm/s @ 5000 mm/s²)
+## 4. CoreXY Velocity & Acceleration Empirical Ladder Tests
 
-### Driver & Motor Configuration:
-* **Steppers:** LDO-42STH48-2004MAH (CoreXY A/B motors) powered by TMC2209 drivers on 24V bus.
-* **Driver Current:** Bumped from stock `0.80 A` $\to$ **`1.00 A`** (`run_current: 1.0` in [`printer.cfg`](../printer_data/config/printer.cfg#L76)) to guarantee torque margin at high accelerations.
-* **Rapid Transit Speed:** Bumped `params_fast_speed` from `10000 mm/min` ($166\text{ mm/s}$) $\to$ **`15000 mm/min`** ($250\text{ mm/s}$) in [`toolchanger-2.4.cfg`](../printer_data/config/tapchanger/toolchanger-2.4.cfg#L5).
+To establish the maximum safe operating envelope for the CoreXY horizontal kinematics (X and Y axes) without risking step loss, motor stall, or driver overheating, an automated multi-tier stress routine was executed in the safe open-air volume ($X: 40 \to 310\text{ mm}, Y: 50 \to 300\text{ mm}, Z = 50.0\text{ mm}$, totaling $>4\text{ meters}$ of continuous full-stroke moves per tier).
 
-### Empirical Rapid Torture Move Test:
-An automated CoreXY stress routine was executed across the full 350 mm build volume:
-* **Move Profile:** 8 consecutive corner-to-corner diagonal rapid moves ($X, Y: [30, 30] \leftrightarrow [320, 320]$) at `400 mm/s` with `5000 mm/s²` acceleration.
-* **Execution Time:** **9.47 seconds** total.
-* **Verification:** Immediate `G28 X` and `G28 Y` sensorless homing confirmed zero stall-guards or step loss across both axes.
+Each tier executed 2 perimeter boxes (pure X & Y moves), 4 full-stroke diagonal crosses (isolating Motor A and Motor B at $v \cdot \sqrt{2}$), and alternating high-speed diamond vectors. After each tier, the toolhead re-homed to measure raw MCU step drift against the hardware endstops:
+* **Sensorless X:** Baseline jitter $\pm 1$ full step (16 microsteps = $0.20\text{ mm}$).
+* **Physical Microswitch Y:** Baseline jitter $\pm 2$ microsteps ($0.025\text{ mm}$).
+
+### Phase 1: Velocity Ladder (Fixed Acceleration = 5,000 mm/s², 1.0A Driver Current)
+
+| Velocity | Stepper RPM (Pure XY) | Stepper RPM (Diagonal $\sqrt{2}$) | Run Time | Measured $\Delta X$ Drift | Measured $\Delta Y$ Drift | Driver Temp | Status / Observation |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| **300 mm/s** | 450 RPM | 636 RPM | 35.64s | `0 steps (0.0000 mm)` | `0 steps (0.0000 mm)` | 62.0°C | **PASS** (Zero Step Loss) |
+| **350 mm/s** | 525 RPM | 742 RPM | 31.39s | `0 steps (0.0000 mm)` | `0 steps (0.0000 mm)` | 62.4°C | **PASS** (Zero Step Loss) |
+| **400 mm/s** | 600 RPM | 848 RPM | 28.30s | `1 step (0.0125 mm)` | `1 step (0.0125 mm)` | 62.7°C | **PASS** (1 microstep, baseline noise) |
+| **450 mm/s** | 675 RPM | 954 RPM | 25.98s | `1 step (0.0125 mm)` | `1 step (0.0125 mm)` | 63.2°C | **PASS** (1 microstep) |
+| **500 mm/s** | 750 RPM | 1,060 RPM | 24.19s | `0 steps (0.0000 mm)` | `0 steps (0.0000 mm)` | 63.2°C | **PASS** (Exact zero drift) |
+| **550 mm/s** | 825 RPM | 1,167 RPM | 22.81s | `0 steps (0.0000 mm)` | `2 steps (0.0250 mm)` | 63.7°C | **PASS** (2 microsteps, endstop jitter) |
+| **600 mm/s** | 900 RPM | 1,273 RPM | 21.70s | `1 step (0.0125 mm)` | `1 step (0.0125 mm)` | 63.7°C | **PASS** (Highest tested zero-loss speed) |
+
+### Phase 2: Acceleration Ladder (Tested at 400 mm/s Velocity, 1.0A Driver Current)
+
+| Acceleration | Motion Profile | Run Time | Measured $\Delta X$ Drift | Measured $\Delta Y$ Drift | Driver Temp | Status / Observation |
+|:---|:---|:---|:---|:---|:---|:---|
+| **4,000 mm/s²** | Conservative Baseline | 29.03s | `1 step (0.0125 mm)` | `1 step (0.0125 mm)` | 64.1°C | **PASS** (Zero Step Loss) |
+| **5,000 mm/s²** | Current Production Baseline | 28.30s | `1 step (0.0125 mm)` | `1 step (0.0125 mm)` | 64.2°C | **PASS** (Zero Step Loss) |
+| **6,000 mm/s²** | High Responsiveness | 27.82s | `1 step (0.0125 mm)` | `1 step (0.0125 mm)` | 64.5°C | **PASS** (Zero Step Loss) |
+| **7,000 mm/s²** | High Dynamic Torque | 27.47s | `0 steps (0.0000 mm)` | `0 steps (0.0000 mm)` | 64.7°C | **PASS** (Exact zero drift) |
+| **8,000 mm/s²** | Extreme Dynamic Load | 27.21s | `0 steps (0.0000 mm)` | `2 steps (0.0250 mm)` | 64.8°C | **PASS** (2 microsteps) |
+| **9,000 mm/s²** | Extreme Dynamic Load | 27.01s | `0 steps (0.0000 mm)` | `0 steps (0.0000 mm)` | 64.9°C | **PASS** (Exact zero drift) |
+| **10,000 mm/s²** | Maximum Torture Limit | 26.85s | `0 steps (0.0000 mm)` | `2 steps (0.0250 mm)` | 65.3°C | **PASS** (Zero Step Loss across all passes) |
+
+### Engineering Takeaways & Production Recommendations:
+1. **Torque Margin & Thermal Stability:** TMC2209 stepper drivers operating at `1.0A` run current stayed exceptionally cool (rising only from 62.0°C to 65.3°C throughout 14 continuous back-to-back stress runs), proving that active skirt cooling provides ample thermal headroom.
+2. **Speed Overhead:** The machine operated without step loss up to **600 mm/s** ($900\text{ RPM}$ pure / $1,273\text{ RPM}$ diagonal). Running at `max_velocity: 400 mm/s` in production maintains a massive **50% safety cushion** below the kinematic limit.
+3. **Acceleration & Input Shaper Tuning:** While the motors and belts reliably endured **10,000 mm/s²**, production accelerations are limited by print quality and input shaper smoothing:
+   - Tool 0 resonance frequencies: MZV @ 62.4 Hz (X), 88.6 Hz (Y) $\implies$ recommended $a_{\max} \approx 5{,}500 - 6{,}500\text{ mm/s²}$.
+   - Tool 1 resonance frequencies: MZV @ 60.1 Hz (X), 72.3 Hz (Y) $\implies$ recommended $a_{\max} \approx 5{,}000 - 6{,}000\text{ mm/s²}$.
+   - **`max_accel: 5000 mm/s²`** is the ideal production baseline for crisp, ringing-free prints across both toolheads.
 
 ---
 

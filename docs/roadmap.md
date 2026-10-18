@@ -10,8 +10,8 @@ This document tracks completed milestones, active tuning tasks, and future optim
 |:---|:---|:---|:---|
 | **`max_z_velocity`** | `50.0 mm/s` | `50.0 mm/s` | **Completed & Qualified.** Slashes vertical travel time to top-frame docks to 11.8s. |
 | **`max_z_accel`** | `500 mm/s²` | `500 mm/s²` | **Completed & Qualified.** Zero step loss, QGL converges to 5 microns. |
-| **`max_velocity` (XY)** | `400 mm/s` | `400 mm/s` | **Completed & Qualified.** 8-cycle diagonal torture test passed in 9.47s with zero step loss. |
-| **`max_accel` (XY)** | `5000 mm/s²` | `5000 mm/s²` | **Completed & Qualified.** Input shaper frequencies cleanly support 5000 accel. |
+| **`max_velocity` (XY)** | `400 mm/s` | `400 mm/s` | **Completed & Qualified.** Velocity ladder passed cleanly up to **600 mm/s (900 RPM / 1273 RPM diagonal)** with 0 lost steps. Production at 400 mm/s maintains 50% safety margin. |
+| **`max_accel` (XY)** | `5000 mm/s²` | `5000 mm/s²` | **Completed & Qualified.** Accel ladder passed up to **10,000 mm/s²**. Set to 5,000 mm/s² production baseline for ideal input shaper quality. |
 | **`params_fast_speed`** | `15000 mm/min` ($250\text{ mm/s}$) | `15000 mm/min` | **Completed & Qualified.** Slashes toolchange duration to 18.90s. |
 | **`run_current` (XY)** | `1.00 A` | `1.00 A` | **Completed & Qualified.** Provides high-speed torque margin on 24V bus. |
 
