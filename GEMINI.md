@@ -9,19 +9,29 @@ This file provides instructional context for AI agents interacting with this rep
   2. Modify the files locally.
   3. Upload the modified files back to the printer's `~/printer_data/config/` directory using `scp` (overwriting the remote files).
   4. Wait a few seconds for `klipper-backup-filewatch.service` (or run `~/klipper-backup/script.sh -c "message"` via SSH) and run `git pull` in this local repository to verify they took effect.
-- **SSH Access:** The AI agent has access to the printer's host machine via SSH (`voron.local` / `192.168.1.46`) from the local environment. Authentication is handled via an SSH key in `~/.ssh`.
+- **SSH Access:** The AI agent has access to the printer's host machine via SSH (`192.168.0.46` / `voron.local`) from the local environment. Authentication is handled via an SSH key in `~/.ssh`.
+- **Static IP Configuration:** `wlan0` is configured with a persistent static IP **`192.168.0.46/22`** (gateway `192.168.0.1`) via NetworkManager (`Chez CoreCats` profile) so it stays outside the router's DHCP range (which starts at `192.168.1.1`).
 - **Klipper-Backup Auth:** Configured on the printer in `~/klipper-backup/.env` using `git_protocol="ssh"` with a repository-scoped GitHub Deploy Key (`~/.ssh/id_ed25519` on `voron`). `inotify-tools` is installed so `klipper-backup-filewatch.service` automatically commits and pushes config edits.
 
 ## Project Overview
-This repository contains the Klipper configuration for a **Voron 2.4 (350mm)** 3D printer utilizing the **StealthChanger/TapChanger** multi-tool system.
+This repository contains the Klipper configuration for a **Voron 2.4 (350mm)** (Formbot base kit) 3D printer utilizing the **StealthChanger/TapChanger** multi-tool system.
 
-### Key Technologies:
+### Key Technologies & Hardware Inventory:
 - **Firmware:** Klipper (`v0.13.0-583-g594ec7e1`) with the `viesturz/klipper-toolchanger` plugin (`94756df`).
 - **Host:** **Raspberry Pi Compute Module 5 Rev 1.0** (Debian Bookworm `6.12.75+rpt-rpi-2712`, upgraded from earlier BTT CB1).
-- **Control Board:** BTT Manta M8P V2.0 (`canbus_uuid: 3d2cb7337ea8`, acting as a USB-to-CAN bridge).
-- **Toolhead MCUs:**
-  - **Tool 0 (T0):** BTT EBB RP2040 (identified as `purple`, `canbus_uuid: 4445b54fe351`). Direct drive (`rotation_distance: 4.58`), MAX31865 PT100.
-  - **Tool 1 (T1):** BTT EBB RP2040 (identified as `EBBCan`, `canbus_uuid: a7f6c7cc913a`). CW2 50:10 gear ratio (`rotation_distance: 22.9`), MAX31865 PT100.
+- **Control Board:** BTT Manta M8P V2.0 (`canbus_uuid: 3d2cb7337ea8`, acting as a USB-to-CAN bridge, TMC2209 drivers).
+- **Toolhead MCUs & Hotends:**
+  - **Tool 0 (T0 - Reference Tool, Purple StealthBurner):**
+    - **MCU:** BTT EBB SB2209 RP2040 (`[mcu purple]`, `canbus_uuid: 4445b54fe351`).
+    - **Hotend:** Phaetus Rapido HF (currently in HF configuration; user also has an uninstalled UHF upgrade kit on hand) with PT1000/PT100 via MAX31865 (`0.4mm` nozzle).
+    - **Extruder:** Clockwork 2 (CW2) / BMG-geared stepper (`rotation_distance: 4.58` direct value, equivalent to `22.9` with `50:10` gear ratio), TMC2209 (`0.65A`).
+    - **Probe:** OptoTap (`^purple:gpio22`, `z_offset: -0.450`).
+  - **Tool 1 (T1 - Green StealthBurner):**
+    - **MCU:** BTT EBB SB2209 RP2040 (`[mcu EBBCan]`, `canbus_uuid: a7f6c7cc913a`, from original Formbot kit).
+    - **Hotend:** Formbot kit hotend (V6/Dragon/Rapido style) with PT1000/PT100 via MAX31865 (`0.4mm` nozzle).
+    - **Extruder:** Clockwork 2 (CW2) with Formbot kit BMG gears (`rotation_distance: 22.9`, `gear_ratio: 50:10`), TMC2209 (`0.65A`).
+    - **Probe:** OptoTap (`^EBBCan:gpio22`, `z_offset: -0.80`).
+- **Accessories:** Nevermore carbon filter (`PF7`), BTT Mini12864 RGB LCD display, Skirt & Exhaust fans.
 - **Communication (CAN Bus):**
   - Bitrate: `1000000` (1M), managed by `systemd-networkd` (`/etc/systemd/network/25-can.network`).
   - Queue Length: **`txqueuelen 128`** via `/etc/udev/rules.d/10-can.rules`.
