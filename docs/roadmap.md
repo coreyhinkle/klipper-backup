@@ -33,13 +33,14 @@ This document tracks completed milestones, active tuning tasks, and future optim
 - [x] Standardize `samples_tolerance: 0.008 mm` on both T0 and T1 OptoTap probes to eliminate retry loops.
 - [x] Qualify CoreXY `max_velocity: 400 mm/s` and `max_accel: 5000 mm/s²` with `1.0A` driver current.
 - [x] Increase toolchange transit `params_fast_speed` to `15000 mm/min` ($250\text{ mm/s}$), clocking live swaps at **18.90s**.
+- [x] **Configuration Cleanup:**
+  - Removed duplicate/dead `#[input_shaper]` and `G32` blocks in [`printer.cfg`](../printer_data/config/printer.cfg).
+  - Removed obsolete `OLD_PRINT_START`, `OLD_PRINT_END`, and dead load/unload macros in [`printer.cfg`](../printer_data/config/printer.cfg).
+  - Purged year-old backup files (`printer-*.cfg-old`, `moonraker-*.conf-old`) from `printer_data/config/`.
+  - Verified sensorless homing currents in [`tapchanger/homing.cfg`](../printer_data/config/tapchanger/homing.cfg) cleanly drop to 0.5A on A/B steppers and restore to 1.0A.
 
 ### Active & Upcoming Tasks
 - [ ] **Hardware:** Install overhead metal tension wire to keep toolhead umbilical wiring taut (eliminates T1 slack).
-- [ ] **Configuration Cleanup:**
-  - Remove duplicate `[resonance_tester]` in [`ebb-sb-rp2040.cfg`](../printer_data/config/ebb-sb-rp2040.cfg).
-  - Remove duplicate empty `[input_shaper]` in [`printer.cfg`](../printer_data/config/printer.cfg).
-  - Equalize sensorless homing currents in [`tapchanger/homing.cfg`](../printer_data/config/tapchanger/homing.cfg).
 - [ ] **Software Package Maintenance:**
   - Run Update Manager for Moonraker, Mainsail, KAMP, and KlipperScreen.
 - [ ] **Validation Print:**
