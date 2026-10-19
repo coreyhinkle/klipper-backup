@@ -47,6 +47,9 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Upgraded Mainboard (STM32H723), Toolhead 0 (RP2040), and Toolhead 1 (RP2040) to `v0.13.0-800-g9cb99754`.
   - Patched `klipper-toolchanger` with upstream PR #174 for latest Klipper probe API compatibility.
   - Fully qualified with live `G28` homing and complete round-trip toolchange (`T0` $\to$ `T1` $\to$ `T0`).
+- [x] **QGL & Bed Mesh Qualification:**
+  - `QUAD_GANTRY_LEVEL` converged to 7.5 microns (`0.0075 mm`) in 2 iterations.
+  - `BED_MESH_CALIBRATE` verified under updated Klipper probe helpers; cold plate variance measured at `0.210 mm` across the 350x350 mm bed.
 - [ ] **Nozzle Brush Alignment:**
   - Run visual hover test at `X=265, Y=350, Z=15` and calibrate purge/wipe macros.
 - [ ] **Validation Print:**
