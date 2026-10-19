@@ -24,7 +24,7 @@ Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2
 - **Hotend:** Phaetus Rapido HF (0.4mm nozzle). User also possesses an uninstalled UHF upgrade kit on hand.
   - Temperature Sensor: PT1000/PT100 via onboard MAX31865 RTD amplifier (`purple:gpio9`).
 - **Extruder:** Clockwork 2 (CW2) with Amazon BMG-style dual-gear kit (`B09WQYHBZY` / Formbot clone gears).
-  - Rotation Distance: `4.58` (direct equivalent to `22.9` with `50:10` gear ratio).
+  - Rotation Distance: `22.9` with `gear_ratio: 50:10`.
   - Motor: TMC2209 at `run_current: 0.650A` (SpreadCycle).
 - **Z Probe:** OptoTap (`^purple:gpio22`, configured in [`sb-2.cfg`](../printer_data/config/sb-2.cfg)).
   - Configured Z Offset: `-0.450 mm`.
