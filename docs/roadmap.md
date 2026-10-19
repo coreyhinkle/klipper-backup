@@ -54,6 +54,6 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Evaluated rear bed brush at `X=265, Y=350, Z=15`. Confirmed toolchanger shuttle geometry places the nozzle ~15mm forward of gantry travel limits, leaving insufficient clearance behind a 350x350 mm bed for a rear purge bucket.
   - Standardized on KAMP adaptive bed purge for print start, and OrcaSlicer / PrusaSlicer Prime Tower for toolchange transitions.
 - [ ] **Dock-Integrated Wipers & Ooze Blockers (Future Hardware Upgrade):**
-  - Print and assemble DraftShift Modular Dock nozzle wipers (Bambu Lab style or PTFE tubing squeegee) and spring-loaded silicone cup / spring-steel ooze blockers directly on the front tool docks.
+  - Print and assemble DraftShift Modular Dock open-hardware nozzle wipers (PTFE tube squeegee / generic high-temp silicone flap) and spring-loaded silicone cup ooze blockers (cast with automotive high-temp RTV silicone). Strictly open-source / generic materials (zero proprietary/Bambu components).
 - [ ] **Validation Print:**
   - Run multi-tool dual-color test cube or benchy to validate real-world extrusion and tool swapping during a continuous print job.
