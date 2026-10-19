@@ -43,6 +43,7 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Added 3-minute Nevermore post-print chamber venting to `PRINT_END`.
   - Added `CALIBRATE_TOOL_SHAPER` macro for multi-tool resonance testing via native Klipper `CHIPS=` parameter.
   - Raised T0 Rapido HF `max_temp` to 300°C in [`sb-2.cfg`](../printer_data/config/sb-2.cfg).
+  - Optimized `PRINT_START` with parallel non-blocking `M104 S150` nozzle preheat alongside bed heating.
 
 ### Active & Upcoming Tasks
 - [ ] **Hardware:** Install overhead metal tension wire to keep toolhead umbilical wiring taut (eliminates T1 slack).
