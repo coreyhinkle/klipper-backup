@@ -55,5 +55,11 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Standardized on KAMP adaptive bed purge for print start, and OrcaSlicer / PrusaSlicer Prime Tower for toolchange transitions.
 - [ ] **Dock-Integrated Wipers & Ooze Blockers (Future Hardware Upgrade):**
   - Print and assemble DraftShift Modular Dock open-hardware nozzle wipers (PTFE tube squeegee / generic high-temp silicone flap) and spring-loaded silicone cup ooze blockers (cast with automotive high-temp RTV silicone). Strictly open-source / generic materials (zero proprietary/Bambu components).
+- [x] **Filament Handling & Macro Modernization:**
+  - Standardized `M600` on upstream Mainsail `PAUSE X=175 Y=20 Z_MIN=50` pattern (preserves bed heater and active nozzle temp).
+  - Consolidated filament loading to lean, tool-aware macros (`LOAD_FILAMENT` and `UNLOAD_FILAMENT`) calibrated for Clockwork 2 direct-drive paths (~50-60mm).
+  - Added carriage mount safety guards (`printer.toolchanger.tool_number < 0`) to prevent cold or dock extrusion.
+  - Eliminated hazardous legacy macros (`UNLOAD_ALL_FILAMENT` dock extrusion risk, `CHANGE_NOZZLE`, and `Z20` collision moves).
 - [ ] **Validation Print:**
   - Run multi-tool dual-color test cube or benchy to validate real-world extrusion and tool swapping during a continuous print job.
+
