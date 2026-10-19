@@ -1,0 +1,169 @@
+{
+  "max_safe_velocity": 600,
+  "max_safe_accel": 10000,
+  "velocity_results": [
+    {
+      "velocity": 300,
+      "accel": 5000,
+      "rpm": 450.0,
+      "elapsed": 35.637049436569214,
+      "dx": 0,
+      "dy": 0,
+      "dx_mm": 0.0,
+      "dy_mm": 0.0,
+      "mcu_temp": 62.03,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 350,
+      "accel": 5000,
+      "rpm": 525.0,
+      "elapsed": 31.389017343521118,
+      "dx": 0,
+      "dy": 0,
+      "dx_mm": 0.0,
+      "dy_mm": 0.0,
+      "mcu_temp": 62.42,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 400,
+      "accel": 5000,
+      "rpm": 600.0,
+      "elapsed": 28.299373149871826,
+      "dx": 1,
+      "dy": 1,
+      "dx_mm": 0.0125,
+      "dy_mm": 0.0125,
+      "mcu_temp": 62.71,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 450,
+      "accel": 5000,
+      "rpm": 675.0,
+      "elapsed": 25.97923254966736,
+      "dx": 1,
+      "dy": 1,
+      "dx_mm": 0.0125,
+      "dy_mm": 0.0125,
+      "mcu_temp": 63.2,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 500,
+      "accel": 5000,
+      "rpm": 750.0,
+      "elapsed": 24.192200660705566,
+      "dx": 0,
+      "dy": 0,
+      "dx_mm": 0.0,
+      "dy_mm": 0.0,
+      "mcu_temp": 63.2,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 550,
+      "accel": 5000,
+      "rpm": 825.0,
+      "elapsed": 22.806383848190308,
+      "dx": 0,
+      "dy": 2,
+      "dx_mm": 0.0,
+      "dy_mm": 0.025,
+      "mcu_temp": 63.69,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 600,
+      "accel": 5000,
+      "rpm": 900.0,
+      "elapsed": 21.704163789749146,
+      "dx": 1,
+      "dy": 1,
+      "dx_mm": 0.0125,
+      "dy_mm": 0.0125,
+      "mcu_temp": 63.74,
+      "status": "PASS (Zero Step Loss)"
+    }
+  ],
+  "accel_results": [
+    {
+      "velocity": 400,
+      "accel": 4000,
+      "elapsed": 29.02676224708557,
+      "dx": 1,
+      "dy": 1,
+      "dx_mm": 0.0125,
+      "dy_mm": 0.0125,
+      "mcu_temp": 64.08,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 400,
+      "accel": 5000,
+      "elapsed": 28.301899671554565,
+      "dx": 1,
+      "dy": 1,
+      "dx_mm": 0.0125,
+      "dy_mm": 0.0125,
+      "mcu_temp": 64.23,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 400,
+      "accel": 6000,
+      "elapsed": 27.817655563354492,
+      "dx": 1,
+      "dy": 1,
+      "dx_mm": 0.0125,
+      "dy_mm": 0.0125,
+      "mcu_temp": 64.52,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 400,
+      "accel": 7000,
+      "elapsed": 27.46964931488037,
+      "dx": 0,
+      "dy": 0,
+      "dx_mm": 0.0,
+      "dy_mm": 0.0,
+      "mcu_temp": 64.72,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 400,
+      "accel": 8000,
+      "elapsed": 27.21089482307434,
+      "dx": 0,
+      "dy": 2,
+      "dx_mm": 0.0,
+      "dy_mm": 0.025,
+      "mcu_temp": 64.77,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 400,
+      "accel": 9000,
+      "elapsed": 27.010021686553955,
+      "dx": 0,
+      "dy": 0,
+      "dx_mm": 0.0,
+      "dy_mm": 0.0,
+      "mcu_temp": 64.86,
+      "status": "PASS (Zero Step Loss)"
+    },
+    {
+      "velocity": 400,
+      "accel": 10000,
+      "elapsed": 26.85002326965332,
+      "dx": 0,
+      "dy": 2,
+      "dx_mm": 0.0,
+      "dy_mm": 0.025,
+      "mcu_temp": 65.3,
+      "status": "PASS (Zero Step Loss)"
+    }
+  ]
+}
