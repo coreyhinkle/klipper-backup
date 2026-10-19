@@ -91,7 +91,8 @@ After upgrading Klipper to `v0.13.0-800` and merging `klipper-toolchanger` PR #1
 ### Additional Traps Identified & Resolved:
 1. **Guaranteed Master Reference Tool (`T0`) for `PRINT_START` Probing ([`tapchanger/macros.cfg`](../printer_data/config/tapchanger/macros.cfg)):**
    - Previously, if a job started while `T1` was left mounted on the carriage from a prior print, `M104 S150` before `INITIALIZE_TOOLCHANGER` heated `T0` in the dock and `G32` / `TOOL_BED_MESH_CALIBRATE` probed with `T1`. `PRINT_START` now initializes the toolchanger first and explicitly selects `T0` after `G28` so QGL, Z homing, and bed meshing always use the calibrated master probe on `T0`.
-2. **Bed Mesh Fade Out Before Top-Docking Height ([`printer.cfg`](../printer_data/config/printer.cfg)):**
+2. **Bed Mesh Bounds (`40, 40` to `310, 310`) & Fade Out Before Top-Docking Height ([`printer.cfg`](../printer_data/config/printer.cfg)):**
+   - Updated `mesh_min: 40, 40` and `mesh_max: 310, 310` (standard Voron 2.4 350mm specification) from `5, 5` / `340, 340`. Probing at the extreme rear-left corner (`X=5.0, Y=340.0`) stretched T0's umbilical cable tight enough to pull the OptoTap carriage upward in mid-air and trip `"Probe triggered prior to movement"`.
    - Added `fade_start: 1.0` and `fade_end: 10.0` (and matched `speed: 400` to `max_velocity`) in `[bed_mesh]`. Previously, `fade_end` defaulted to `0.0` (disabled), causing front-edge bed mesh Z offsets to remain active at `Z = 297.55–299.0 mm` during tool docking/undocking.
 3. **Crash Detection & State Cleanup on `CANCEL_PRINT` ([`printer.cfg`](../printer_data/config/printer.cfg)):**
    - Added `[gcode_macro _CLIENT_VARIABLE]` with `variable_user_cancel_macro: "_ON_PRINT_CANCEL"` to disarm `STOP_TOOL_PROBE_CRASH_DETECTION` and reset `PRINT_START.printing = False` when a print is cancelled, and configured `PAUSE` to park safely at the rear center (`X=175, Y=300, dz=10`).

@@ -72,7 +72,7 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Eliminated hazardous legacy macros (`UNLOAD_ALL_FILAMENT` dock extrusion risk, `CHANGE_NOZZLE`, and `Z20` collision moves).
 - [x] **Klipper `v0.13.0-800` & `klipper-toolchanger` PR #174 Config Audit & Homing Fix:**
   - Fixed `_ADJUST_Z_HOME_FOR_TOOL_OFFSET` and `TOOL_BED_MESH_CALIBRATE` in [`tapchanger/homing.cfg`](../printer_data/config/tapchanger/homing.cfg) to use native `ADJUST_Z_AFTER_TOOL_NOZZLE_HOME` without double-applying `probe_z_offset` or overwriting active bed mesh Z compensation.
-  - Added `fade_start: 1.0` / `fade_end: 10.0` to `[bed_mesh]` in [`printer.cfg`](../printer_data/config/printer.cfg) so bed mesh Z offsets fade out completely well below top-docking height (`Z ≈ 298 mm`).
+  - Updated `[bed_mesh]` in [`printer.cfg`](../printer_data/config/printer.cfg) to standard Voron 350mm bounds (`mesh_min: 40, 40`, `mesh_max: 310, 310`) to prevent extreme rear-left umbilical pull (`X=5, Y=340`), and added `fade_start: 1.0` / `fade_end: 10.0` so bed mesh Z offsets fade out completely well below top-docking height (`Z ≈ 298 mm`).
   - Added `_CLIENT_VARIABLE` and `_ON_PRINT_CANCEL` in [`printer.cfg`](../printer_data/config/printer.cfg) to disarm crash detection on print cancel and park safely at rear center (`X=175, Y=300`).
   - Hardened `PRINT_START` in [`tapchanger/macros.cfg`](../printer_data/config/tapchanger/macros.cfg) to always select master reference tool `T0` for QGL, Z homing, and bed meshing, and added a `1.0°C` PID tolerance to `pickup_gcode` `TEMPERATURE_WAIT` in [`tapchanger/toolchanger-2.4.cfg`](../printer_data/config/tapchanger/toolchanger-2.4.cfg).
 - [ ] **Validation Print:**
