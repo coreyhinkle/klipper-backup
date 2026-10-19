@@ -73,6 +73,10 @@ Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2
 ---
 
 ## 5. Chamber & Auxiliary Accessories
+- **Enclosure Doors & Clearances:** **DraftChange Front Door Extenders** installed. Custom outward-offset hinges and perimeter spacers push the front acrylic doors outward past the frame boundary.
+  - **Dock Clearance:** Provides the necessary clearance for the front-mounted StealthChanger docks ($Y \approx 1\text{--}2\text{ mm}$, $Z \approx 298\text{ mm}$) and carriage shuttle, preventing contact during toolchanges.
+  - **Front Accessory Mounting:** The forward clearance also enables mounting front-bed accessories (such as a front-edge nozzle brush or purge wiper) without door interference, utilizing the forward-shifted toolhead reach.
 - **Air Filtration:** Nevermore Micro V5 carbon filter (`[fan_generic Nevermore]` on pin `PF7`).
 - **Display:** BigTreeTech Mini12864 RGB LCD with Neopixel backlights.
 - **Cooling:** Skirt fans for electronics bay cooling and rear chamber exhaust fan.
+

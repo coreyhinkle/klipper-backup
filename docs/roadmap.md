@@ -46,6 +46,7 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Optimized `PRINT_START` with parallel non-blocking `M104 S150` nozzle preheat alongside bed heating.
 
 ### Active & Upcoming Tasks
+- [ ] **Thermal / Electronics Cooling:** Install top-mount heatsink / active cooler on Raspberry Pi CM5 SoC. Revert/automate skirt fans in [`printer.cfg`](../printer_data/config/printer.cfg#L239-L251) (currently set to temporary `fan_generic` for manual cooling).
 - [ ] **Hardware:** Install overhead metal tension wire to keep toolhead umbilical wiring taut (eliminates T1 slack).
 - [x] **Software Package Maintenance:**
   - Upgraded Mainsail (`v2.19.0`), KlipperScreen (`v0.4.7-196`), KAMP (`v1.1.2-14`), Sonar (`v0.2.0-2`), and `klipper-backup` (`v1.3.6-7`).
@@ -56,8 +57,11 @@ This document tracks completed milestones, active tuning tasks, and future optim
 - [x] **QGL & Bed Mesh Qualification:**
   - `QUAD_GANTRY_LEVEL` converged to 7.5 microns (`0.0075 mm`) in 2 iterations.
   - `BED_MESH_CALIBRATE` verified under updated Klipper probe helpers; cold plate variance measured at `0.210 mm` across the 350x350 mm bed.
+- [x] **Enclosure Clearance:** Installed **DraftChange front door extenders** to provide clearance for the front-mounted StealthChanger docks ($Y \approx 1\text{--}2\text{ mm}$, $Z \approx 298\text{ mm}$) and forward-shifted carriage shuttle.
+- [x] **Optical Tool Offset Calibration (T0 vs T1):** Calibrated XY nozzle offsets using an upward-facing USB macro camera with centroid sub-pixel tracking. Updated T1 in [`ebb-sb-rp2040.cfg`](../printer_data/config/ebb-sb-rp2040.cfg) to `gcode_x_offset: 1.447`, `gcode_y_offset: -2.236` (residual error $< 50\ \mu\text{m}$, repeatability $\sigma < 20\ \mu\text{m}$).
 - [x] **Nozzle Brush Alignment Audit:**
   - Evaluated rear bed brush at `X=265, Y=350, Z=15`. Confirmed toolchanger shuttle geometry places the nozzle ~15mm forward of gantry travel limits, leaving insufficient clearance behind a 350x350 mm bed for a rear purge bucket.
+  - **Front Bed Brush Feasibility:** With DraftChange front door extenders installed, a front-bed mounted brush/wiper (attached to the front bed extrusion) is physically viable and avoids rear-travel limits with minimal transit distance to front docks.
   - Standardized on KAMP adaptive bed purge for print start, and OrcaSlicer / PrusaSlicer Prime Tower for toolchange transitions.
 - [ ] **Dock-Integrated Wipers & Ooze Blockers (Future Hardware Upgrade):**
   - Print and assemble DraftShift Modular Dock open-hardware nozzle wipers (PTFE tube squeegee / generic high-temp silicone flap) and spring-loaded silicone cup ooze blockers (cast with automotive high-temp RTV silicone). Strictly open-source / generic materials (zero proprietary/Bambu components).

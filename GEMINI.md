@@ -38,7 +38,7 @@ For detailed technical specifications and data tables, consult the modular docum
 
 ## 3. Key Operational Conventions
 
-1. **Reference Tool:** Toolhead 0 (T0 - Purple Rapido HF) is the absolute coordinate reference (`gcode_x_offset: 0`, `gcode_y_offset: 0`, `gcode_z_offset: 0`). Toolhead 1 (T1 - Green V6) offsets are applied relative to T0.
+1. **Reference Tool:** Toolhead 0 (T0 - Purple Rapido HF) is the absolute coordinate reference (`gcode_x_offset: 0`, `gcode_y_offset: 0`, `gcode_z_offset: 0`). Toolhead 1 (T1 - Green V6) offsets are applied relative to T0 (`gcode_x_offset: 1.447`, `gcode_y_offset: -2.236`, `gcode_z_offset: 0.750`), calibrated optically with $<50\ \mu\text{m}$ residual error.
 2. **SpreadCycle Mode:** All extruder steppers run with `stealthchop_threshold: 0` for maximum torque and minimal step-generation latency.
 3. **Probe Clearance:** When running manual probe commands (`PROBE`, `PROBE_ACCURACY`), always retract to `Z >= 10` immediately afterward to prevent restarting Klipper while the OptoTap nozzle is mechanically depressed against the bed.
 4. **CAN Bus Queue Length:** `txqueuelen` must remain **`128`** via `/etc/udev/rules.d/10-can.rules`. Never change to 1024.
@@ -46,7 +46,9 @@ For detailed technical specifications and data tables, consult the modular docum
 ---
 
 ## 4. Current Machine Status & Active Baseline
-- **Firmware:** Klipper `v0.13.0-583-g594ec7e1` with `viesturz/klipper-toolchanger` (`94756df`).
+- **Firmware:** Klipper `v0.13.0-800-g9cb99754` with `viesturz/klipper-toolchanger` (`94756df` + PR #174 patch).
 - **Z-Axis Speed Baseline:** `max_z_velocity: 50.0 mm/s`, `max_z_accel: 500.0 mm/s²`.
 - **Leveling:** `QUAD_GANTRY_LEVEL` qualified at 50 mm/s to `0.0050 mm` tolerance.
-- **Active Toolhead:** Toolhead 0 (Purple) mounted, system homed and parked safely.
+- **Enclosure:** DraftChange front door extenders installed (clears front-mounted StealthChanger docks at $Y \approx 1\text{--}2\text{ mm}$ and forward-shifted carriage).
+- **Toolhead Offsets:** Optically verified with sub-50 µm residual error across repetitive docking cycles.
+- **Active State:** System homed, parked safely at bed center ($X=175, Y=175, Z=80$).

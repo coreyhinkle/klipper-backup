@@ -38,3 +38,13 @@ All technical documentation has been organized into modular guides:
 - `UNSELECT_TOOL` — Safely dock the active toolhead and return shuttle empty
 - `TOOL_ALIGN_START` / `TOOL_ALIGN_TEST` / `TOOL_ALIGN_DONE` — Interactive docking inspection suite
 - `QUAD_GANTRY_LEVEL` — Levels the flying gantry parallel to the bed (agrees within 0.2 µm across both tools)
+
+---
+
+## ⚠️ Active Hardware & Configuration Notes
+
+> [!WARNING]
+> **Temporary Fan Configuration (Electronics Bay Cooling):**
+> - The skirt fans (`skirt1` on `PF6` and `skirt2` on `PF9`) are temporarily configured in [`printer.cfg`](printer_data/config/printer.cfg#L239-L251) as `[fan_generic]` instead of `[heater_fan]` to allow manual 100% cooling during offline calibration.
+> - **Action Required:** Once a dedicated top-mount heatsink / cooler is installed on the **Raspberry Pi Compute Module 5 (CM5)**, revert `skirt1` and `skirt2` in [`printer.cfg`](printer_data/config/printer.cfg#L239-L251) back to their original configuration or permanently convert them to automated `[temperature_fan]` tracking `temperature_host` (target 50–55°C) so the CM5 remains cool regardless of whether the bed heater is active.
+

@@ -7,7 +7,7 @@ This document describes the configuration, docking geometry, macros, and operati
 ## 1. System Overview
 - **Plugin:** `viesturz/klipper-toolchanger` (commit `94756df`).
 - **Kinematics & Transformation:** Modern `ToolGcodeTransform` handles nozzle X/Y/Z offsets internally in Python, eliminating legacy `SET_GCODE_OFFSET` conflicts.
-- **Dock Mounting:** Frame-mounted docks located on the top rear extrusion:
+- **Dock Mounting:** Frame-mounted docks located on the **top front extrusion** ($Y \approx 1\text{--}2\text{ mm}$, $Z \approx 298\text{ mm}$), enabled by **DraftChange front door extenders** which space the enclosure doors forward to clear the docks and carriage:
   - **Tool 0 (Purple):** Park position `X: 339.25, Y: 1.10, Z: 297.55` ([`sb-2.cfg`](../printer_data/config/sb-2.cfg))
   - **Tool 1 (Green):** Park position `X: 4.00, Y: 2.00, Z: 299.00` ([`ebb-sb-rp2040.cfg`](../printer_data/config/ebb-sb-rp2040.cfg))
 - **Docking Paths:** Configured using the `rods_sb_path` spline in [`toolchanger-2.4.cfg`](../printer_data/config/tapchanger/toolchanger-2.4.cfg):
@@ -43,9 +43,10 @@ Defined in [`tapchanger/toolchanger-2.4.cfg`](../printer_data/config/tapchanger/
    - `gcode_y_offset: 0`
    - `gcode_z_offset: 0`
    - All other tools are calibrated relative to T0. Tool 1 offsets are calibrated as:
-     - `gcode_x_offset: -1.0`
-     - `gcode_y_offset: 0.0`
+     - `gcode_x_offset: 1.447`
+     - `gcode_y_offset: -2.236`
      - `gcode_z_offset: 0.750`
+   - **Optical Offset Qualification:** Tuned using upward-facing bed camera with sub-pixel centroid analysis. Residual offset error is $< 50\ \mu\text{m}$ ($\Delta X = -0.042\text{ mm}$, $\Delta Y = +0.053\text{ mm}$), well within mechanical repeatability envelope ($\sigma \approx 8\text{--}18\ \mu\text{m}$).
 2. **SpreadCycle Extrusion:**
    - Both extruders operate in pure SpreadCycle mode (`stealthchop_threshold: 0`) for maximum torque delivery and minimal MCU step-generation latency.
 3. **Toolhead Lighting:**
@@ -67,6 +68,9 @@ Defined in [`tapchanger/toolchanger-2.4.cfg`](../printer_data/config/tapchanger/
 * `TOOL_ALIGN_TEST` — Tests docking engagement by dropping and re-picking the active toolhead.
 * `TOOL_ALIGN_DONE` — Exits docking mode and restores normal operation.
 
-### Maintenance
+### Maintenance & Nozzle Cleaning
 * `BELT_TUNING_POS` — Moves the gantry to the center of the chamber at a standard height for measuring belt tension.
-* `CLEAN_NOZZLE` — Wipes the nozzle against the dock purge pad/brush.
+* **Nozzle Brushing / Wiping Notes:**
+  - *Rear Bed Brush Limitation:* Because the StealthChanger carriage shifts the toolhead forward, the nozzle cannot reach behind a 350x350 mm bed ($Y > 350$), making conventional rear-edge purge buckets/brushes unreachable.
+  - *Front-Bed Brush Feasibility:* With **DraftChange front door extenders** installed, the extended forward space allows a nozzle brush to be mounted along the **front edge of the bed / frame**. This placement aligns with tool transit to/from the front docks ($Y \approx 1\text{--}2\text{ mm}$) and avoids rear travel limits entirely.
+
