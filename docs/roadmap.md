@@ -38,6 +38,11 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Removed obsolete `OLD_PRINT_START`, `OLD_PRINT_END`, and dead load/unload macros in [`printer.cfg`](../printer_data/config/printer.cfg).
   - Purged year-old backup files (`printer-*.cfg-old`, `moonraker-*.conf-old`) from `printer_data/config/`.
   - Verified sensorless homing currents in [`tapchanger/homing.cfg`](../printer_data/config/tapchanger/homing.cfg) cleanly drop to 0.5A on A/B steppers and restore to 1.0A.
+  - Removed dead out-of-bounds wipe macros (`_PARK_ON_COOLING_PAD`, `_CLEAN_NOZZLE`, `_WIPE_NOZZLE`, `CLEAN_NOZZLE`).
+  - Fixed crash detection in [`tapchanger/tool_detection.cfg`](../printer_data/config/tapchanger/tool_detection.cfg) to `PAUSE` instead of cutting motor power (`M84`).
+  - Added 3-minute Nevermore post-print chamber venting to `PRINT_END`.
+  - Added `CALIBRATE_TOOL_SHAPER` macro for multi-tool resonance testing via native Klipper `CHIPS=` parameter.
+  - Raised T0 Rapido HF `max_temp` to 300°C in [`sb-2.cfg`](../printer_data/config/sb-2.cfg).
 
 ### Active & Upcoming Tasks
 - [ ] **Hardware:** Install overhead metal tension wire to keep toolhead umbilical wiring taut (eliminates T1 slack).
