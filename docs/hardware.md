@@ -27,7 +27,7 @@ Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2
   - Rotation Distance: `22.9` with `gear_ratio: 50:10`.
   - Motor: TMC2209 at `run_current: 0.650A` (SpreadCycle).
 - **Z Probe:** OptoTap (`^purple:gpio22`, configured in [`sb-2.cfg`](../printer_data/config/sb-2.cfg)).
-  - Configured Z Offset: `-0.450 mm`.
+  - Configured Z Offset: `-0.800 mm` (aligned with T1 `-0.80 mm`).
 - **Accelerometers:** Onboard ADXL345 (`purple:gpio1`).
 - **Lighting:** StealthBurner RGB LEDs (`sb_leds_t0`).
 - **Operational Status:** Serves as the global coordinate reference (`gcode_x_offset: 0`, `gcode_y_offset: 0`, `gcode_z_offset: 0`).
