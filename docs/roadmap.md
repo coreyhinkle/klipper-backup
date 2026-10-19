@@ -50,7 +50,10 @@ This document tracks completed milestones, active tuning tasks, and future optim
 - [x] **QGL & Bed Mesh Qualification:**
   - `QUAD_GANTRY_LEVEL` converged to 7.5 microns (`0.0075 mm`) in 2 iterations.
   - `BED_MESH_CALIBRATE` verified under updated Klipper probe helpers; cold plate variance measured at `0.210 mm` across the 350x350 mm bed.
-- [ ] **Nozzle Brush Alignment:**
-  - Run visual hover test at `X=265, Y=350, Z=15` and calibrate purge/wipe macros.
+- [x] **Nozzle Brush Alignment Audit:**
+  - Evaluated rear bed brush at `X=265, Y=350, Z=15`. Confirmed toolchanger shuttle geometry places the nozzle ~15mm forward of gantry travel limits, leaving insufficient clearance behind a 350x350 mm bed for a rear purge bucket.
+  - Standardized on KAMP adaptive bed purge for print start, and OrcaSlicer / PrusaSlicer Prime Tower for toolchange transitions.
+- [ ] **Dock-Integrated Wipers & Ooze Blockers (Future Hardware Upgrade):**
+  - Print and assemble DraftShift Modular Dock nozzle wipers (Bambu Lab style or PTFE tubing squeegee) and spring-loaded silicone cup / spring-steel ooze blockers directly on the front tool docks.
 - [ ] **Validation Print:**
   - Run multi-tool dual-color test cube or benchy to validate real-world extrusion and tool swapping during a continuous print job.
