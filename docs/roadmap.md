@@ -41,7 +41,11 @@ This document tracks completed milestones, active tuning tasks, and future optim
 
 ### Active & Upcoming Tasks
 - [ ] **Hardware:** Install overhead metal tension wire to keep toolhead umbilical wiring taut (eliminates T1 slack).
-- [ ] **Software Package Maintenance:**
-  - Run Update Manager for Moonraker, Mainsail, KAMP, and KlipperScreen.
+- [x] **Software Package Maintenance:**
+  - Upgraded Mainsail (`v2.19.0`), KlipperScreen (`v0.4.7-196`), KAMP (`v1.1.2-14`), Sonar (`v0.2.0-2`), and `klipper-backup` (`v1.3.6-7`).
+- [ ] **MCU Firmware Upgrade (Katapult / CANBus):**
+  - Architecture, flashing sequence, and Esoterical CAN bus references documented in [`docs/firmware_upgrade_guide.md`](firmware_upgrade_guide.md). Ready for execution.
+- [ ] **Nozzle Brush Alignment:**
+  - Run visual hover test at `X=265, Y=350, Z=15` and calibrate purge/wipe macros.
 - [ ] **Validation Print:**
   - Run multi-tool dual-color test cube or benchy to validate real-world extrusion and tool swapping during a continuous print job.
