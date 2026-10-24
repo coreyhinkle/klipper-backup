@@ -46,10 +46,14 @@ This repository contains the configuration, macro suite, and documentation for a
 
 ## 3. Critical Upstream Quirks & Traps (Must Know!)
 
-### A. Klipper `v0.13.0-800` & PR #174 Virtual Probe Homing
-- In Klipper `v0.13.0-800+` (`5cbebdc3`) + `klipper-toolchanger` PR #174 (`0bded50`), `G28 Z` **automatically applies `probe_z_offset`** during virtual endstop homing.
+### A. KTC-Easy & Virtual Probe Homing
+- The system runs **`jwellman80/klipper-toolchanger-easy` (KTC-Easy)** tracking `main` in `~/klipper-toolchanger-easy/`.
+- Toolchanger configurations are organized under `printer_data/config/toolchanger/`:
+  - `readonly-configs/` (symlinked to KTC-Easy examples for clean Moonraker updates).
+  - `tools/` (active tools like `T0.cfg`; inactive/isolated tools named `T*.cfg.disabled`).
+  - `toolchanger-config.cfg` (user-level overrides for dock coordinates, paths, and homing parameters).
+- In Klipper `v0.13.0-800+` (`5cbebdc3`) with KTC-Easy's updated probe API, `G28 Z` **automatically applies `probe_z_offset`** during virtual endstop homing.
 - **NEVER** use `SET_KINEMATIC_POSITION Z={... + probe_z_offset}` in homing macros. That will double-apply the offset and drive the nozzle into the build plate!
-- Use `klipper-toolchanger`'s native command `ADJUST_Z_AFTER_TOOL_NOZZLE_HOME` in `_ADJUST_Z_HOME_FOR_TOOL_OFFSET`.
 
 ### B. Never Run `SAVE_CONFIG` after `PROBE_CALIBRATE`
 - In `klipper-toolchanger`, each tool probe reads its offset from its own section (`[tool_probe T0]` in `sb-2.cfg` and `[tool_probe T1]` in `ebb-sb-rp2040.cfg`).
@@ -82,3 +86,15 @@ This repository contains the configuration, macro suite, and documentation for a
 - **Printer IP:** `192.168.0.46` (port 80 for Mainsail, port 7125 for Moonraker).
 - **SSH Access:** `ssh zyper@192.168.0.46` (passwordless key access configured).
 - **Documentation:** Full technical guides live in [`docs/`](docs/) (`hardware.md`, `toolchanger.md`, `benchmarks.md`, `troubleshooting.md`, `roadmap.md`).
+
+---
+
+## 6. Slicer Profiles & Integration
+
+Tuned PrusaSlicer and SuperSlicer profiles recovered from the Windows workstation are stored in:
+- **Directory**: \`slicer_profiles/\`
+- **Documentation & Review Context**: \`slicer_profiles/README.md\`
+- **Key Profiles**:
+  - \`slicer_profiles/prusa_windows_backup/printer/VORON V2 350mm - 0.4mm Nozzle (High Flow) - Custom.ini\` (Active dual-extruder StealthChanger configuration).
+  - \`slicer_profiles/prusa_windows_backup/print/0.20mm Standard @VORON2 - HF0.4mm - Copy.ini\` (Active high-speed Arachne profile).
+  - \`slicer_profiles/whistle_voron_full_sliced_config.ini\` (Full configuration dump from actual Voron slice).

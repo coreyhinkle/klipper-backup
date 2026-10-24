@@ -33,6 +33,7 @@ For detailed technical specifications and data tables, consult the modular docum
 - **Toolchanger Architecture:** See [`docs/toolchanger.md`](docs/toolchanger.md) for StealthChanger docking splines, park coordinates, macros, and operational conventions.
 - **Troubleshooting & Fixes:** See [`docs/troubleshooting.md`](docs/troubleshooting.md) for root-cause analyses on resolved toolchange bugs (offset doubling, premature pickup crash detection, and OptoTap cable drag).
 - **Tuning Roadmap & Audit:** See [`docs/roadmap.md`](docs/roadmap.md) for prioritized upcoming tasks and speed optimization targets.
+- **Workshop Inventory:** See [`/home/ai/workshop-inventory/AGENTS.md`](/home/ai/workshop-inventory/AGENTS.md) for filament stock, spare nozzles/hotends, fasteners, and workshop tools.
 
 ---
 
@@ -46,7 +47,8 @@ For detailed technical specifications and data tables, consult the modular docum
 ---
 
 ## 4. Current Machine Status & Active Baseline
-- **Firmware:** Klipper `v0.13.0-800-g9cb99754` with `viesturz/klipper-toolchanger` (`94756df` + PR #174 patch).
+- **Firmware:** Klipper `v0.13.0-800-g9cb99754` with `jwellman80/klipper-toolchanger-easy` (`main` branch, KTC-Easy).
+- **Toolchanger Configs:** Standardized in `printer_data/config/toolchanger/` (`readonly-configs/`, `tools/T0.cfg`, `toolchanger-config.cfg`).
 - **Z-Axis Speed Baseline:** `max_z_velocity: 50.0 mm/s`, `max_z_accel: 500.0 mm/s²`.
 - **Leveling:** `QUAD_GANTRY_LEVEL` qualified at 50 mm/s to `0.0050 mm` tolerance.
 - **Enclosure:** DraftChange front door extenders installed (clears front-mounted StealthChanger docks at $Y \approx 1\text{--}2\text{ mm}$ and forward-shifted carriage).
