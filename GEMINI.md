@@ -4,17 +4,21 @@ This file provides core operational rules, remote interaction protocols, and sys
 
 ---
 
-## 1. Remote Interaction & Source of Truth Rules
+## 1. Remote Interaction, Upstream Compliance & Source of Truth Rules
 
 > [!IMPORTANT]
 > **The physical printer (`192.168.0.46:~/printer_data/config/`) is the SOLE source of truth.**
 > NEVER modify files in `printer_data/config/` directly inside the local workstation repository, as automated backups from `klipper-backup` will overwrite them.
+>
+> **Always Follow Upstream First:** Strictly follow upstream repository patterns and design architecture (`jwellman80/klipper-toolchanger-easy`).
+> Always inspect and double-check what upstream does before making modifications. If an agent believes moving away from upstream is necessary, it MUST double-check upstream first, explain the exact technical rationale, and justify it clearly to the user for explicit approval before writing any code. Avoid custom snowflake macros or fragmented configs.
 
 ### Configuration Modification Workflow:
-1. **Retrieve:** Use `scp` to copy target configuration files from `zyper@192.168.0.46:~/printer_data/config/<file>` to a local scratch directory (`scratch/<file>`).
-2. **Modify:** Make and review edits locally.
-3. **Deploy:** Upload modified files back to the printer via `scp scratch/<file> zyper@192.168.0.46:~/printer_data/config/<file>`.
-4. **Backup & Sync:** Let `klipper-backup-filewatch.service` auto-commit (or run `~/klipper-backup/script.sh -c "commit message"` via SSH), then run `git pull` in this workstation repository.
+1. **Pre-Flight Idle Gate (MANDATORY):** Before running `FIRMWARE_RESTART`, `RESTART`, or any G-code command, query Moonraker's `print_stats` and `idle_timeout` objects (`curl -s "http://192.168.0.46:7125/printer/objects/query?print_stats&idle_timeout&extruder&extruder1&heater_bed"`) and verify `print_stats.state == "standby"` and `idle_timeout.state != "Printing"`. Never rely on `/printer/info` (`"state": "ready"`) alone to determine if a print is running.
+2. **Retrieve:** Use `scp` to copy target configuration files from `zyper@192.168.0.46:~/printer_data/config/<file>` to a local scratch directory (`scratch/<file>`).
+3. **Modify:** Make and review edits locally. Never leave `.bak` or `.md` files inside `~/printer_data/config/`.
+4. **Deploy:** Upload modified files back to the printer via `scp scratch/<file> zyper@192.168.0.46:~/printer_data/config/<file>`.
+5. **Backup & Sync:** Let `klipper-backup-filewatch.service` auto-commit (or run `~/klipper-backup/script.sh -c "commit message"` via SSH), then run `git pull` in this workstation repository.
 
 ### Network & Authentication:
 - **Host Access:** Passwordless SSH and `sudo` access are configured for `zyper@192.168.0.46` (`voron.local`).
@@ -39,7 +43,7 @@ For detailed technical specifications and data tables, consult the modular docum
 
 ## 3. Key Operational Conventions
 
-1. **Reference Tool:** Toolhead 0 (T0 - Purple Rapido HF) is the absolute coordinate reference (`gcode_x_offset: 0`, `gcode_y_offset: 0`, `gcode_z_offset: 0`). Toolhead 1 (T1 - Green V6) offsets are applied relative to T0 (`gcode_x_offset: 1.447`, `gcode_y_offset: -2.236`, `gcode_z_offset: 0.750`), calibrated optically with $<50\ \mu\text{m}$ residual error.
+1. **Reference Tool & Homing Rule (Upstream KTC-Easy):** Toolhead 0 (T0 - Purple Rapido HF) is the absolute coordinate reference (`gcode_x_offset: 0`, `gcode_y_offset: 0`, `gcode_z_offset: 0`). Toolhead 1 (T1 - Green V6) offsets are applied relative to T0. Per upstream KTC-Easy `README.md`, after initial `G28`, **always select `T0` for `QUAD_GANTRY_LEVEL`, `G28 Z` (`G32`), and `BED_MESH_CALIBRATE`** before switching to `T{params.TOOL}`. Avoid custom macro overrides when upstream `toolchanger/readonly-configs/` provides the macro.
 2. **SpreadCycle Mode:** All extruder steppers run with `stealthchop_threshold: 0` for maximum torque and minimal step-generation latency.
 3. **Probe Clearance:** When running manual probe commands (`PROBE`, `PROBE_ACCURACY`), always retract to `Z >= 10` immediately afterward to prevent restarting Klipper while the OptoTap nozzle is mechanically depressed against the bed.
 4. **CAN Bus Queue Length:** `txqueuelen` must remain **`128`** via `/etc/udev/rules.d/10-can.rules`. Never change to 1024.

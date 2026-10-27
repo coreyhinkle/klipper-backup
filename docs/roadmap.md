@@ -75,6 +75,7 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Updated `[bed_mesh]` in [`printer.cfg`](../printer_data/config/printer.cfg) to standard Voron 350mm bounds (`mesh_min: 40, 40`, `mesh_max: 310, 310`) to prevent extreme rear-left umbilical pull (`X=5, Y=340`), and added `fade_start: 1.0` / `fade_end: 10.0` so bed mesh Z offsets fade out completely well below top-docking height (`Z ≈ 298 mm`).
   - Added `_CLIENT_VARIABLE` and `_ON_PRINT_CANCEL` in [`printer.cfg`](../printer_data/config/printer.cfg) to disarm crash detection on print cancel and park safely at rear center (`X=175, Y=300`).
   - Hardened `PRINT_START` in [`tapchanger/macros.cfg`](../printer_data/config/tapchanger/macros.cfg) to always select master reference tool `T0` for QGL, Z homing, and bed meshing, and added a `1.0°C` PID tolerance to `pickup_gcode` `TEMPERATURE_WAIT` in [`tapchanger/toolchanger-2.4.cfg`](../printer_data/config/tapchanger/toolchanger-2.4.cfg).
-- [ ] **Validation Print:**
-  - Run multi-tool dual-color test print (`micro+bitonal+whistle+color`) to validate real-world extrusion and tool swapping during a continuous print job.
+- [x] **Validation Print:**
+  - **Passed & Qualified:** Executed multi-tool dual-color validation print (`micro+bitonal+whistle+color`) with active tool swapping across all print layers. Verified zero lost steps, seamless docking transitions at 250 mm/s transit (18.9s toolchange duration), accurate thermal preheating, and precise layer alignment with KAMP adaptive bed mesh.
+  - **Reversion Anchor:** Tagged in git as `multitool-validated` on commit `6183d9b`.
 

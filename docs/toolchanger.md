@@ -31,7 +31,7 @@ Defined in [`tapchanger/toolchanger-2.4.cfg`](../printer_data/config/tapchanger/
 * **`params_safe_y`:** `90.0 mm` — Safe clearance distance in front of docks before initiating rapid cross-bed XY travels.
 * **`params_close_y`:** `35.0 mm` — Close approach coordinate before engaging docking splines.
 * **`params_fast_speed`:** `10000 mm/min` ($166.7\text{ mm/s}$) — Feedrate used for non-docking travels across the bed to/from the docks.
-* **`params_path_speed`:** `600 mm/min` ($10.0\text{ mm/s}$) — Precision slow feedrate used while mating/unmating toolhead pins and pads.
+* **`params_path_speed`:** `900 mm/min` ($15.0\text{ mm/s}$) — Precision docking feedrate used while traversing dock splines (halved to $450\text{ mm/min}$ via `f: 0.5` during mechanical pad engagement).
 * **Crash Detection:** Handled via `[tool_probe_endstop]`. Crash detection is armed **after** the toolhead lifts clear of the dock rods (`Z: +8` at `Y: 9.5`) to eliminate false triggers during pickup.
 
 ---

@@ -30,8 +30,9 @@ All technical documentation has been organized into modular guides:
 ### Tuned Kinematics Baseline
 - **`max_z_velocity`:** **`50.0 mm/s`** (3.3x speedup over 15 mm/s stock default)
 - **`max_z_accel`:** **`500.0 mm/s²`**
-- **Print-Height Toolchange Time:** **`20.11 seconds`** (measured live from $Z = 5\text{ mm}$ to top-frame docks and back, saving **26.1s per swap** over stock)
-- **`QUAD_GANTRY_LEVEL`:** Converges cleanly within **`0.0050 mm` (5 microns)** at 50 mm/s
+- **Print-Height Toolchange Time:** **`18.90 seconds`** (measured live from $Z = 5\text{ mm}$ to top-frame docks and back, saving **27.3s per swap** over stock)
+- **`QUAD_GANTRY_LEVEL`:** Converges cleanly within **`0.0050 mm` (5 microns)** at 50 mm/s (`horizontal_move_z: 4.0 mm`)
+- **Multi-Tool Validation Print:** Successfully completed dual-color print (`micro+bitonal+whistle+color`); tagged baseline `multitool-validated`
 
 ### Essential Toolchanger Commands
 - `T0` / `T1` — Select Toolhead 0 (Purple) or Toolhead 1 (Green)

@@ -132,3 +132,20 @@ Following the switch to 50 mm/s, full homing and QGL was verified:
 
 ### Cross-Tool QGL Comparison (T0 OptoTap vs T1 OptoTap)
 Comparing QGL runs between T0 and T1 revealed that **both probes converged to the exact same gantry tilt plane down to 0.2 microns**. This confirms that the carriage shuttle and docking mechanisms maintain perfect rigidity without any toolhead pitch or yaw skew between tools.
+
+---
+
+## 7. Multi-Tool Dual-Color Validation Print Benchmark
+
+### Test Object & Conditions
+* **Model:** `micro+bitonal+whistle+color` (dual-material whistle).
+* **Toolheads:** Toolhead 0 (T0 - Rapido HF 0.4mm, Purple) & Toolhead 1 (T1 - V6 0.4mm, Green).
+* **Kinematics:** CoreXY $v_{\max} = 400\text{ mm/s}$, $a = 5{,}000\text{ mm/s²}$; Z-axis $v_{\max} = 50.0\text{ mm/s}$, $a = 500\text{ mm/s²}$.
+* **Toolchange Transit Speed:** `params_fast_speed: 15000 mm/min` ($250\text{ mm/s}$), `params_path_speed: 900 mm/min` ($15\text{ mm/s}$).
+* **Probing:** OptoTap on T0/T1, `horizontal_move_z: 4.0 mm` for QGL and `BED_MESH_CALIBRATE ADAPTIVE=1`.
+
+### Results & Verification
+1. **Toolchange Reliability:** 100% successful pick-and-place cycles across dozens of tool swaps throughout the print. Zero lost steps, no false crash detection triggers, and zero magnet misalignments.
+2. **Thermal Stability:** Active tool heated to print temperature while docked tool dropped to idle without temperature overshoot or buffer stall.
+3. **Dimensional & Layer Alignment:** Excellent XY interfacial layer registration with zero visible seam shift between colors, confirming calibrated Nudge offsets (`gcode_x_offset: 0.450`, `gcode_y_offset: -0.250`, `gcode_z_offset: 0.3025`).
+4. **Git Revert Point:** Tagged baseline `multitool-validated`.
