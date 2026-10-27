@@ -44,15 +44,22 @@ Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2
 - **Accelerometers:** Onboard ADXL345 (`EBBCan:gpio1`).
 - **Lighting:** StealthBurner RGB LEDs (`sb_leds_t1`).
 
+### Toolhead Electronics Spares & Inventory
+- **Spare StealthBurner CAN Toolboard:** **BigTreeTech EBB SB2209/SB2240 CAN V1.0** on hand in workshop inventory. Direct replacement for T0/T1 StealthBurner CW2 setups.
+
 ---
 
 ## 3. Umbilical Cable Suspension & Wire Tension
 - **Overhead Harness Setup:** Toolhead CAN and power cables run overhead to keep the gantry clear.
-- **Tension Wire Note:** 
+- **Current Baseline:** 
   - T0's umbilical suspension wire is taut.
   - T1's overhead cable currently has slight slack compared to T0.
   - **Mechanical Effect:** Because OptoTap measures carriage deflection against magnetic preloads, umbilical slack at extreme reach (`X=50, Y=275`, rear-left corner) exerts slight variable vertical drag, resulting in minor ~2.5 µm (1 microstep) tap variances during initial probing passes before settling.
-  - **Hardware Plan:** Install dedicated metal tension wire to ensure both toolhead umbilicals maintain identical, taut suspension across the entire 350mm build envelope.
+- **Umbilical Management & Expansion Architecture:**
+  - **Mechanical Anchor (Top Rear):** Moving to an upper-frame **Umbilical Plate** (DraftShift / N3MI pattern, sized for Voron 350mm 5-tool). Houses integrated ECAS04 push-fit collets for PTFE guide tubes and relief anchor points for 0.3x3mm flat spring steel spines.
+  - **Spine System:** 0.3mm x 3mm flat coil spring steel spine along each umbilical to form a self-supporting vertical arc into the top hat, eliminating downward weight/drag on the OptoTap carriage.
+  - **Fleet Interchangeability:** Universal umbilical spans sized for 350mm reach (~740mm). Terminated with Molex Micro-Fit 3.0 for active StealthBurners (CW2 + EBB SB2209), and modularly compatible with future DragonBurners (Sherpa Mini + EBB36) without altering the top plate or CAN bus backbone.
+  - **Electrical Hub Separation:** Bare 5-port CAN distribution board is isolated from mechanical tugging loads by enclosing it in a rear-mounted **Fanny Pack** enclosure with an integrated wire duct.
 
 ---
 
