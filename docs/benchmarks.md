@@ -237,8 +237,23 @@ Once isolated testing proved **why** `lift_speed` and `horizontal_move_z` were p
 | **Cand 2: Two-Pass (`PS=5` Upstream)** | `Z=8` (1-tap) $\to$ `Z=2` (3-tap) | **`5 / 35 / 2.0 / 3 / 0.020`** | `45.74 s` *(`5.0 µm` final)* | `85.69 s` *(0 retries, `9.7 µm`)* | `~28.5 s` *(0 retries)* | `~81 s` (1m 21s) |
 | **Cand 3: Hybrid Fast Mesh (`SAMPLES=2`)** | 3-sample QGL + 2-sample Mesh (`Z=2`) | `6 / 35 / 2.0` (`S=2` on Mesh) | `43.90 s` | **`56.16 s`** *(0 retries, `9.8 µm`)* | **`19.50 s`** *(0 retries)* | `70.18 s` (1m 10s) |
 
+---
+
+### 8.6 Real-World `M84` Motor-Off Sag vs. Overnight Droop (`G28` + QGL Head-to-Head)
+
+To verify whether artificial `+0.50 mm` `FORCE_MOVE` twists biased the comparison toward Two-Pass QGL, a realistic motor-cutoff benchmark was executed with the heavy **Rapido HF StealthBurner** overhanging front-left `(60, 30, Z=30)` followed by `M84` (motors disabled), full `G28` re-homing, and QGL:
+
+| Real-World Starting Condition | Strategy (`8 / 35 / 2.0 / 3 / 0.020`) | Measured Initial Sag | Total QGL Passes | Retries | Final Spread | QGL Time | Winner & Mechanical Explanation |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| **Back-to-Back Print** *(motors still enabled)* | **Upstream Single-Pass** | `<= 0.0075 mm` | **1 pass** | 0 | `2.5–7.5 µm` | **`~15.5 s`** | **Single-Pass by ~22s.** Converges in 1 lap and stops immediately. |
+| **Normal `M84` Cutoff** *(15s motors off @ `60,30`)* | **Upstream Single-Pass (`Z=4`)** | **`0.0175 mm`** (`17.5 µm`) | **2 passes** | 0 | `7.5 µm` | **`30.04 s`** | **Single-Pass by `7.89s`.** 5:1 geared Z drives hold within `17.5 µm` on `M84`! |
+| **Normal `M84` Cutoff** *(15s motors off @ `60,30`)* | Two-Pass (`Z=8` 1-tap $\to$ `Z=2` 3-tap) | `0.0275 mm` *(after coarse)* | 1 coarse + 2 fine | 0 | `5.0 µm` | `37.93 s` | **Slower!** Unfiltered `SAMPLES=1` coarse pass injects `15–25 µm` Tap #1 noise into a nearly flat gantry, forcing 2 extra fine passes. |
+| **Normal `M84` Cutoff** *(15s motors off @ `60,30`)* | Two-Pass (`PS=6`) | `0.0200 mm` *(after coarse)* | 1 coarse + 2 fine | 2 | `5.0 µm` | `43.40 s` | Same `SAMPLES=1` coarse-pass noise penalty. |
+| **Severe Overnight Droop** *(`1.2 mm` front droop + `M84`)* | **Upstream Single-Pass (`Z=4`)** | `0.6875 mm` | 3 passes | 0 | `5.0 µm` | `44.97 s` | Clears `1.2 mm` droop with `>3.3 mm` margin; `0` retries. |
+| **Severe Overnight Droop** *(`1.2 mm` front droop + `M84`)* | Two-Pass (`Z=8` 1-tap $\to$ `Z=2` 3-tap) | `0.7000 mm` | 1 coarse + 2 fine | 0 | `5.0 µm` | **`38.11 s`** | Faster *only* when initial gantry droop exceeds `~0.40 mm`. |
+
 ### Summary Conclusions for `T0` (Rapido HF StealthBurner + OptoTap)
-1. **Best Overall Production Profile (`PS=8` Two-Pass Hybrid):** Pairing `[tool_probe T0]` (`speed: 8.0`, `lift_speed: 35.0`, `sample_retract_dist: 2.0`, `samples: 3`, `samples_result: median`, `samples_tolerance: 0.020`) with `[bed_mesh] horizontal_move_z: 2` and Two-Pass Coarse/Fine `G32` (`Z=8` 1-tap $\to$ `Z=2` 3-tap) clocked **`39.35s`, `38.62s`, and `38.72s`** across three consecutive `+0.50 mm` trials (**0 retries** on all three runs, converging to an identical **`5.0 µm`** gantry spread every single time) and cut total pre-print time (`QGL + G28 Z + KAMP 3×3`) from **~3m 18s down to 1m 11.5s (64% reduction)**.
-2. **Coarse/Fine `G32` Safety Bonus:** Beyond shaving another `6.5s` off single-pass QGL (`38.90s` vs `45.37s`), Two-Pass `G32` **doubles Pass 1 nozzle clearance (`8 mm` vs `4 mm`)** after motors-off sag (measured at `0.96 mm` in Phase 0).
-3. **Keep `samples: 3` (`median`) for Homing & QGL:** On the heavier Rapido HF StealthBurner, Tap #1 consistently exhibits `10–15 µm` shuttle seating after `400 mm/s` travels. Three-sample median completely rejects Tap #1 and converged QGL **10.4 seconds faster** than `SAMPLES=2`.
+1. **Decisive Real-World Winner — Option A (`PS=8` Upstream Single-Pass):** Testing real `M84` motor cutoffs proved that the 80:16 (5:1) geared Z drives only sag **`17.5 µm`** under the Rapido HF StealthBurner's weight during normal `M84` idle. Under real print starts, **pure upstream single-pass `G32`** (`speed: 8.0`, `lift_speed: 35.0`, `sample_retract_dist: 2.0`, `samples: 3`, `samples_result: median`, `samples_tolerance: 0.020`, plus `[bed_mesh] horizontal_move_z: 2`) finishes QGL in **`~15.5s` on back-to-back prints** and **`30.04s` after `M84`**—cutting typical pre-print `QGL + G28 Z + KAMP 3×3` down to **`48–62 seconds`** (down from `~198s`, a **69–75% reduction**) with **zero macro changes**.
+2. **Why `SAMPLES=1` Coarse Pass Hurt Normal Starts:** Because Tap #1 on the Rapido HF StealthBurner carries `10–15 µm` of shuttle-seating offset, a 1-sample coarse pass actually *tilts* an already-flat (`<= 17.5 µm`) gantry out to `27.5 µm`, forcing 2 extra fine passes (`37.93s` vs `30.04s`).
+3. **Keep `samples: 3` (`median`) for Homing & QGL:** Three-sample median cleanly discards Tap #1 on every corner and converged QGL **10.4 seconds faster** than `SAMPLES=2`.
 
