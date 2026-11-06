@@ -149,3 +149,95 @@ Comparing QGL runs between T0 and T1 revealed that **both probes converged to th
 2. **Thermal Stability:** Active tool heated to print temperature while docked tool dropped to idle without temperature overshoot or buffer stall.
 3. **Dimensional & Layer Alignment:** Excellent XY interfacial layer registration with zero visible seam shift between colors, confirming calibrated Nudge offsets (`gcode_x_offset: 0.450`, `gcode_y_offset: -0.250`, `gcode_z_offset: 0.3025`).
 4. **Git Revert Point:** Tagged baseline `multitool-validated`.
+
+---
+
+## 8. OptoTap QGL & Bed Mesh Isolated Speed Optimization (`T0` Rapido HF StealthBurner)
+
+### Hardware & Thermal Test Profile
+Because StealthChanger magnetic shuttle settling depends directly on toolhead mass, center-of-gravity overhang, and umbilical stiffness, all measurements in this section are explicitly baselined to the heavier **Rapido HF StealthBurner** master reference assembly (distinct from the lighter `T1` V6 StealthBurner and planned DragonBurner/EBB36 expansion tools):
+* **Toolhead Under Test:** **`T0` — Purple StealthBurner** (`Phaetus Rapido HF 0.4 mm` hotend, `Clockwork 2` extruder, `BTT EBB SB2209 RP2040` CAN board, `OptoTap` optical sensor on `^purple:gpio22`, `z_offset: -0.605`).
+* **Build Plate & Thermal Equilibrium:** **Smooth PEI** spring-steel sheet held at **`60.0°C`**, `T0` nozzle held at **`150.0°C`** throughout all runs to eliminate bed thermal-expansion drift and match active Voron Tap `PRINT_START` conditions.
+* **Kinematics Baseline:** CoreXY `400 mm/s` (`5,000 mm/s²`), Z-axis `50.0 mm/s` (`500 mm/s²`).
+* **Stock Probe Baseline (`T0.cfg` / `printer.cfg`):** `speed: 10.0 mm/s`, `lift_speed: 10.0 mm/s` *(implicit default)*, `samples: 3` (`median`), `sample_retract_dist: 3.0 mm`, `samples_tolerance: 0.008 mm`, `horizontal_move_z: 4.0 mm` (QGL & Bed Mesh).
+* **Methodology:** Every parameter was tested **strictly in isolation** via Klipper runtime G-code overrides (`LIFT_SPEED=`, `PROBE_SPEED=`, `SAMPLE_RETRACT_DIST=`, `SAMPLES=`, `SAMPLES_TOLERANCE=`, `HORIZONTAL_MOVE_Z=`) before evaluating combined profiles. Every QGL run started from an identical `+0.50 mm` `stepper_z2` corner droop injected via `FORCE_MOVE` at `(175, 175, Z=10)`. Every 5×5 bed mesh (`40,40` to `310,310`) was center-normalized against Phase 0 stock to quantify surface curvature fidelity (`mean` and `max` shape deviation in $\mu\text{m}$).
+
+---
+
+### 8.1 Root-Cause Diagnosis: Pre-Optimization Real-World Log Audit
+Prior to controlled testing, an audit of `klippy.log` from a live Gridfinity print revealed why `QUAD_GANTRY_LEVEL` felt sluggish despite `400 mm/s` XY travels:
+* **Live Print QGL Duration:** **149.1 seconds (2m 29s)** across **5 passes** and **111 probe taps**, hitting `"Probe samples exceed tolerance. Retrying..."` **19 times**.
+* **Mechanical Mechanism (Tap #1 Shuttle Seating):** After a `250 mm` corner-to-corner travel at `400 mm/s`, **Tap #1 consistently triggered `10.0–25.0 µm` (`0.010–0.025 mm`) offset** from Taps #2–#4 as the heavy **Rapido HF StealthBurner** settled into its StealthChanger magnetic seats/linear rail. Once seated, consecutive taps at the same XY coordinate repeated within **`0.0000–0.0025 mm` (0–1 microstep)**.
+* **Why `samples_tolerance: 0.008` Backfired:** Although `samples_result: median` (`samples: 3`) mathematically discards a single outlier (Tap #1), Klipper's `SampleAveragingHelper` checks `max(z) - min(z) > samples_tolerance` *before* computing the median. Setting `samples_tolerance: 0.008 mm` (3.2 microsteps) caused normal `10–15 µm` Tap #1 seating on the Rapido StealthBurner to wipe all 3 samples and force 6–9 taps per point.
+* **Missing `lift_speed`:** Omitting `lift_speed` in `[tool_probe T0]` defaulted inter-sample retracts, `horizontal_move_z` lifts, *and* QGL's 4-motor Z adjustments (`quad_gantry_level.py`) to `10.0 mm/s`.
+
+---
+
+### 8.2 Stationary 20-Sample Repeatability (`PROBE_ACCURACY` at `175, 175`)
+
+| Isolated Variable Tested | `probe_speed` | `lift_speed` | `retract` | Elapsed Time | Total Range (20 taps) | Std Dev ($\sigma$) | Engineering Observation |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| **Phase 0 / Stock Baseline** | `10.0 mm/s` | `10.0 mm/s` | `3.0 mm` | `22.50 s` | `0.0225 mm` | `5.61 µm` | Tap #1 outlier after `Z=10` approach inflates $\sigma$. |
+| **Test 1A: `LIFT_SPEED=35`** | `10.0 mm/s` | **`35.0 mm/s`** | `3.0 mm` | `19.37 s` | `0.0150 mm` | `3.47 µm` | Crisp upward retract; zero accuracy degradation. |
+| **Test 1B: `LIFT_SPEED=45`** | `10.0 mm/s` | **`45.0 mm/s`** | `3.0 mm` | `19.39 s` | `0.0100 mm` | **`1.82 µm`** | 17 of last 18 taps hit identical `-0.0225 mm` microstep. |
+| **Test 2A: `PROBE_SPEED=8`** | **`8.0 mm/s`** | `10.0 mm/s` | `3.0 mm` | `23.95 s` | `0.0125 mm` | `2.41 µm` | $>2\times$ tighter $\sigma$ vs `10 mm/s` plunge. |
+| **Test 2B: `PROBE_SPEED=6`** | **`6.0 mm/s`** | `10.0 mm/s` | `3.0 mm` | `28.01 s` | `0.0100 mm` | `2.66 µm` | Gentle smooth-PEI contact; minimal overshoot. |
+| **Test 2C: `PROBE_SPEED=5`** | **`5.0 mm/s`** | `10.0 mm/s` | `3.0 mm` | `29.20 s` | **`0.0075 mm`** | **`1.87 µm`** | Sub-microstep $\sigma$; all 20 taps within `7.5 µm`. |
+| **Test 3A: `RETRACT=2.0`** | `10.0 mm/s` | `10.0 mm/s` | **`2.0 mm`** | `18.74 s` | `0.0150 mm` | `3.58 µm` | Clean OptoTap magnet reseating (`>1.19 mm` above deadband). |
+| **Test 3B: `RETRACT=1.5`** | `10.0 mm/s` | `10.0 mm/s` | **`1.5 mm`** | `16.85 s` | `0.0150 mm` | `3.49 µm` | Clean reseating, though tighter margin above `0.81 mm` deadband. |
+
+---
+
+### 8.3 Full-Motion `QUAD_GANTRY_LEVEL` Isolation Matrix
+
+All runs started from an identical controlled `+0.50 mm` `stepper_z2` twist (except Phase 0 initial cold-sag recovery from `0.960 mm` sag):
+
+| Test ID & Isolated Change | QGL Passes | Tolerance Retries | Final Gantry Range | Elapsed Time | Takeaway (`T0` Rapido HF StealthBurner) |
+|:---|:---|:---|:---|:---|:---|
+| **Live Print Log (Pre-Audit)** | 5 passes | **19 retries** | `0.0075 mm` | **149.10 s** | Severe `0.008 mm` retry storm after `400 mm/s` corner whips. |
+| **Phase 0 (Unleveled `0.96 mm` sag)** | 3 passes | 4 retries | `0.0050 mm` | `62.77 s` | Proves `0.96 mm` idle sag—`horizontal_move_z: 2` on Pass 1 is unsafe. |
+| **Stock Controlled (`+0.50 mm`)** | 2 passes | 2 retries | `0.0075 mm` | `39.84 s` | Controlled baseline (`speed=10`, `lift=10`, `retract=3`, `tol=0.008`). |
+| **Test 1: `LIFT_SPEED=40` Only** | 3 passes | 4 retries | `0.0075 mm` | `54.11 s` | Fast Z lift + `0.008 mm` tol triggers extra Tap #1 retries (`10 µm` > `8 µm`). |
+| **Test 2A: `PROBE_SPEED=8` Only** | 3 passes | 3 retries | `0.0050 mm` | `63.54 s` | Still bottlenecked by `lift_speed=10` and `0.008 mm` tol. |
+| **Test 2B: `PROBE_SPEED=6` Only** | 2 passes | 2 retries | `0.0075 mm` | `47.01 s` | Converges in 2 passes despite slow `10 mm/s` Z lifts. |
+| **Test 2C: `PROBE_SPEED=5` Only** | 2 passes | 2 retries | `0.0100 mm` | `50.61 s` | Converges in 2 passes; slow Z lifts dominate time. |
+| **Test 4A: Two-Pass (`Z=8` 1-tap $\to$ `Z=2` 3-tap)** | 1 coarse + 1 fine | 1 retry | `0.0075 mm` | **`31.29 s`** | **Fastest stock-speed QGL.** Coarse pass nails tilt; fine pass finishes in 1 lap. |
+| **Test 4B: Two-Pass (`Z=8` 1-tap $\to$ `Z=2` 2-tap)** | 1 coarse + 2 fine | 2 retries | `0.0025 mm` | `41.65 s` | **10.36s slower than 3-sample median!** `SAMPLES=2` lacks outlier rejection. |
+| **Test 6A: `SAMPLES_TOLERANCE=0.015` Only** | 3 passes | **0 retries** | **`0.0000 mm`** | `52.88 s` | Eliminates all retries; converges to `0.0 µm` across all 4 corners. |
+| **Test 6C: `SAMPLES_TOLERANCE=0.020` Only** | 2 passes | **0 retries** | `0.0075 mm` | **`35.35 s`** | Upstream KTC-Easy tolerance eliminates retries completely. |
+
+---
+
+### 8.4 Full-Motion 5×5 `BED_MESH_CALIBRATE` Isolation Matrix (`40,40` to `310,310`)
+
+| Test ID & Isolated Change | Tolerance Retries | Elapsed Time | Mean Surface $\Delta$ vs Stock | Max Point $\Delta$ vs Stock | Engineering Verdict |
+|:---|:---|:---|:---|:---|:---|
+| **Phase 0: Stock Baseline** | 2 retries | `103.49 s` | `0.00 µm` *(ref)* | `0.00 µm` *(ref)* | Reference 75+ tap 5×5 smooth-PEI mesh at `60°C`. |
+| **Test 1: `LIFT_SPEED=40` Only** | **13 retries** | `116.36 s` | `11.00 µm` | `22.50 µm` | **Slower in isolation!** Crisp Z-lift pushes Tap #1 to `10 µm`, tripping `0.008` tol 13×. |
+| **Test 3: `RETRACT=2.0` Only** | **18 retries** | `138.48 s` | **`4.80 µm`** | `12.50 µm` | Surface matches stock within `<2` microsteps, but `0.008` tol causes 18 retries. |
+| **Test 5A: `HORIZONTAL_MOVE_Z=2` Only** | 8 retries | `114.36 s` | **`5.10 µm`** | `15.00 µm` | Safe post-QGL clearance, but masked until `0.008` tol retries are fixed. |
+| **Test 5B: `SAMPLES=2` Only** | 5 retries | `81.13 s` | `6.70 µm` | `17.50 µm` | Cuts 22s, still suffers 5 retries under `0.008` tol. |
+| **Test 5C: `SAMPLES=1` Only** | **0 retries** | **`42.38 s`** | **`5.70 µm`** | `17.50 µm` | Constant Tap #1 seating offset cancels out in bed curvature (`5.7 µm` mean $\Delta$). |
+| **Test 6B: `SAMPLES_TOLERANCE=0.015` Only** | **0 retries** | `97.35 s` | **`5.00 µm`** | **`10.00 µm`** | **Zero retries** and `5.0 µm` (2-microstep) agreement across entire 350 mm bed. |
+| **Test 6D: `PROBE_SPEED=6` Only** | 3 retries | `126.36 s` | `7.80 µm` | `25.00 µm` | Needs `lift_speed: 35` so slower downward plunge doesn't add travel delay. |
+
+---
+
+### 8.5 Combined Production Candidates (`T0` Rapido HF StealthBurner)
+
+Once isolated testing proved **why** `lift_speed` and `horizontal_move_z` were previously bottlenecked by `samples_tolerance: 0.008 mm`, the winning parameters were benchmarked together across QGL (`+0.50 mm` twist), `G28 Z`, full 5×5 bed mesh, and a real-world **KAMP 3×3 Adaptive Mesh** (`60×60 mm` Gridfinity footprint):
+
+| Combined Profile | QGL Strategy | Probe Params (`speed` / `lift` / `retract` / `samples` / `tol`) | QGL Time (`+0.50 mm`) | Full 5×5 Mesh Time (Mean $\Delta$) | KAMP 3×3 Adaptive Mesh | Total Pre-Print (`QGL + G28 Z + KAMP 3×3`) |
+|:---|:---|:---|:---|:---|:---|:---|
+| **Pre-Audit Print Log** | Single-Pass (`Z=4`) | `10 / 10 / 3.0 / 3 / 0.008` | `149.10 s` *(19 retries)* | `103.49 s` *(ref)* | `~42 s` *(est)* | **`~198 s` (3m 18s)** |
+| **Upstream Single-Pass (`PS=8`)** | **Stock `G32` (`Z=4`)** *(zero macro edits)* | **`8 / 35 / 2.0 / 3 / 0.020`** | **`45.37 s`** *(0 retries, `7.5 µm`)* | **`73.40 s`** *(0 retries, **`5.1 µm`**)* | **`25.88 s`** *(0 retries)* | **`77.95 s` (1m 18s)** |
+| **Upstream Single-Pass (`PS=6`)** | **Stock `G32` (`Z=4`)** *(zero macro edits)* | **`6 / 35 / 2.0 / 3 / 0.020`** | `50.54 s` *(1 retry, `0.0 µm`)* | `~80 s` | `~27 s` | `~84 s` (1m 24s) |
+| **Cand 1: Two-Pass (`PS=6`)** | `Z=8` (1-tap) $\to$ `Z=2` (3-tap) | **`6 / 35 / 2.0 / 3 / 0.015`** | **`43.90 s`** *(`2.5 µm` final)* | `84.52 s` *(`8.5 µm`)* | **`27.87 s`** *(0 retries)* | **`78.55 s` (1m 19s)** |
+| **Cand 2: Two-Pass (`PS=5` Upstream)** | `Z=8` (1-tap) $\to$ `Z=2` (3-tap) | **`5 / 35 / 2.0 / 3 / 0.020`** | `45.74 s` *(`5.0 µm` final)* | `85.69 s` *(0 retries, `9.7 µm`)* | `~28.5 s` *(0 retries)* | `~81 s` (1m 21s) |
+| **Cand 3: Hybrid Fast Mesh (`SAMPLES=2`)** | 3-sample QGL + 2-sample Mesh (`Z=2`) | `6 / 35 / 2.0` (`S=2` on Mesh) | `43.90 s` | **`56.16 s`** *(0 retries, `9.8 µm`)* | **`19.50 s`** *(0 retries)* | **`70.18 s` (1m 10s)** |
+
+### Summary Conclusions for `T0` (Rapido HF StealthBurner + OptoTap)
+1. **Upstream Compliance Wins Without Custom Macros:** Simply aligning `[tool_probe T0]` with upstream KTC-Easy (`speed: 6.0–8.0`, `lift_speed: 35.0`, `sample_retract_dist: 2.0`, `samples: 3`, `samples_result: median`, `samples_tolerance: 0.020`) and setting `[bed_mesh] horizontal_move_z: 2` **cuts pre-print QGL + Z-home + KAMP adaptive mesh from ~3m 18s down to ~1m 18s (61% reduction)** with **zero tolerance retries**, **`5.1 µm` mean mesh accuracy**, and **zero snowflake macro changes** to `G32`.
+2. **Optional Coarse/Fine `G32` Protection:** While Two-Pass QGL (`HORIZONTAL_MOVE_Z=8 RETRIES=0 SAMPLES=1` $\to$ `HORIZONTAL_MOVE_Z=2`) saves ~`1.5–14s` depending on initial tilt, its primary advantage on a 350 mm flying gantry is **doubling Pass 1 nozzle clearance (`8 mm` vs `4 mm`)** after motors-off sag (measured at `0.96 mm` in Phase 0).
+3. **Keep `samples: 3` (`median`) for Homing & QGL:** On the heavier Rapido HF StealthBurner, Tap #1 consistently exhibits `10–15 µm` shuttle seating after `400 mm/s` travels. Three-sample median completely rejects Tap #1 and converged QGL **10.4 seconds faster** than `SAMPLES=2`.
+
