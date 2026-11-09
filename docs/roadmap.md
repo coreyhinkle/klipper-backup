@@ -90,8 +90,14 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Evaluated rear bed brush at `X=265, Y=350, Z=15`. Confirmed toolchanger shuttle geometry places the nozzle ~15mm forward of gantry travel limits, leaving insufficient clearance behind a 350x350 mm bed for a rear purge bucket.
   - **Front Bed Brush Feasibility:** With DraftChange front door extenders installed, a front-bed mounted brush/wiper (attached to the front bed extrusion) is physically viable and avoids rear-travel limits with minimal transit distance to front docks.
   - Standardized on KAMP adaptive bed purge for print start, and OrcaSlicer / PrusaSlicer Prime Tower for toolchange transitions.
-- [ ] **Dock-Integrated Wipers & Ooze Blockers (Future Hardware Upgrade):**
-  - Print and assemble DraftShift Modular Dock open-hardware nozzle wipers (PTFE tube squeegee / generic high-temp silicone flap) and spring-loaded silicone cup ooze blockers (cast with automotive high-temp RTV silicone). Strictly open-source / generic materials (zero proprietary/Bambu components).
+- [ ] **Dock-Integrated Spring-Steel Silicone Stopper / Ooze Blocker Suite:**
+  - [x] Sourced and imported official upstream DraftShift & jwellman80 blocker STLs to [`models/modular_dock_blockers/`](../models/modular_dock_blockers/) with SHA-256 validation registered in [`stl_viewer/upstream_sources.json`](../stl_viewer/upstream_sources.json):
+    - Casting Mold Jigs: [`Nozzle_Pad_Mold_A.stl`](../models/modular_dock_blockers/Nozzle_Pad_Mold_A.stl) & [`Nozzle_Pad_Mold_B.stl`](../models/modular_dock_blockers/Nozzle_Pad_Mold_B.stl)
+    - Spring Steel Blocker Cup: [`Spring_Cup_Blocker.stl`](../models/modular_dock_blockers/Spring_Cup_Blocker.stl)
+    - Mount Hardware: [`Spring_Steel_Body.stl`](../models/modular_dock_blockers/Spring_Steel_Body.stl) & [`Spring_Steel_Clamp.stl`](../models/modular_dock_blockers/Spring_Steel_Clamp.stl)
+  - [ ] Print casting mold jigs (`Nozzle_Pad_Mold_A/B.stl`) and spring cup blocker bodies (`Spring_Cup_Blocker.stl`) for all toolhead docks (T0, T1, T2, and upcoming T3/T4) in heat-resistant ABS/ASA.
+  - [ ] Cut OFFO 304 stainless steel ties to length (~22mm from center screw), drill M2 hole, fasten to printed cup, and cast high-temp silicone stoppers using Permatex Ultra Red RTV.
+  - [ ] Mount spring steel stopper assemblies onto docks using `Spring_Steel_Body` and `Spring_Steel_Clamp` with M2 screws. Verify positive nozzle contact sealing across all parked toolheads.
 - [x] **Filament Handling & Macro Modernization:**
   - Standardized `M600` on upstream Mainsail `PAUSE X=175 Y=20 Z_MIN=50` pattern (preserves bed heater and active nozzle temp).
   - Consolidated filament loading to lean, tool-aware macros (`LOAD_FILAMENT` and `UNLOAD_FILAMENT`) calibrated for Clockwork 2 direct-drive paths (~50-60mm).
