@@ -46,8 +46,36 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - Optimized `PRINT_START` with parallel non-blocking `M104 S150` nozzle preheat alongside bed heating.
 
 ### Active & Upcoming Tasks
+- [ ] **Toolhead 2 (`T2` - `cyan` Dragon Burner) & Toolhead 3 (`T3` - `yellow` Dragon Burner) Bring-Up:**
+  - [x] Flash Katapult + Klipper (`v0.13.0-800-g9cb99754`, 8KiB offset, 1 Mbps CAN on `PB0/PB1`) to both BTT EBB36 v1.2 boards (`[mcu cyan]` `108d45e46fd2` and `[mcu yellow]` `ce0655e3d001`).
+  - [x] Verify `T2` (`cyan`) fans (`PA0` part fan, `PA1` hotend fan), thermistor (`PA3`, `ATC Semitec 104NT-4-R025H42G`), heater (`PB13`), TMC2209 (`PA15`), ADXL345 (`PB12`), and RGBW NeoPixels (`PD3`, `color_order: GRBW`).
+  - [x] Run `T2` hotend PID calibration at 240°C (`pid_Kp: 40.092, pid_Ki: 13.364, pid_Kd: 30.069`).
+  - [x] Verify `T2` OptoTap sensor (`^cyan:PB6`) and complete 200-tap break-in (`0.99 µm` std dev across taps 101–200).
+  - [ ] **T2 Extruder Calibration (`[extruder2]` - Sherpa Mini):**
+    - Verify motor rotation direction (`dir_pin: !cyan:PD1` vs `cyan:PD1`) so positive `+E` pulls filament into the hotend.
+    - Confirm pinion gear tooth count (`gear_ratio: 50:10` vs `50:8`) and run 100 mm filament extrusion calibration to dial in `rotation_distance` (currently `22.67895` in [`T2.cfg`](../printer_data/config/toolchanger/tools/T2.cfg)).
+  - [ ] **T2 Physical Assembly & Hardware Tuning:**
+    - Install support brace across the back of `T2` (`cyan`).
+    - Finish assembling and mounting `T2`'s DraftShift Modular Dock (`Top_Crossbar.stl` / `Bottom_Crossbar.stl`) on the front 2020 crossbar.
+    - Calibrate and save `params_park_x`, `params_park_y`, `params_park_z` in `[tool T2]` ([`T2.cfg`](../printer_data/config/toolchanger/tools/T2.cfg)) and verify clean dropoff/pickup cycles. *(Do NOT run `T0`, `T1`, or `UNSELECT_TOOL` while `T2` is on the shuttle until `T2`'s dock is mounted and calibrated!)*
+  - [ ] **Recalculate Nudge Probe Position (`_CALIBRATION_SWITCH`):**
+    - Re-measure `variable_x`, `variable_y`, and `variable_z` in [`toolchanger-config.cfg`](../printer_data/config/toolchanger/toolchanger-config.cfg) using master reference tool `T0` since the physical Nudge mount location was moved slightly.
+  - [ ] **T2 Probe Z-Offset & Tool X/Y/Z Offset Calibration:**
+    - Calibrate `[tool_probe T2]` `z_offset` (write manually into [`T2.cfg`](../printer_data/config/toolchanger/tools/T2.cfg); never use `SAVE_CONFIG`).
+    - Run Nudge calibration to set `gcode_x_offset`, `gcode_y_offset`, and `gcode_z_offset` on `T2` relative to `T0`.
+  - [ ] **T2 Input Shaper Calibration:**
+    - Run resonance testing using `[adxl345 T2]` and update `params_input_shaper_*` in [`T2.cfg`](../printer_data/config/toolchanger/tools/T2.cfg).
+  - [ ] **T3 (`yellow`) Assembly & Bring-Up:**
+    - Assemble `T3` hardware, uncomment [`T3.cfg`](../printer_data/config/toolchanger/tools/T3.cfg), and repeat peripheral verification, PID, extruder calibration, dock parking, and Nudge offset calibration.
 - [ ] **Thermal / Electronics Cooling:** Install top-mount heatsink / active cooler on Raspberry Pi CM5 SoC. Revert/automate skirt fans in [`printer.cfg`](../printer_data/config/printer.cfg#L239-L251) (currently set to temporary `fan_generic` for manual cooling).
-- [ ] **Hardware:** Install overhead metal tension wire to keep toolhead umbilical wiring taut (eliminates T1 slack).
+- [ ] **Umbilical Management & CAN Hub Upgrade (Top Frame & Rear):**
+  - Print and install DraftShift/N3MI **Voron 350 5-Tool Umbilical Plate** on top rear 2020 extrusion with ECAS04 PTFE collets and 0.3x3mm spring steel relief anchors.
+  - Print and mount **Fanny Pack** enclosure on rear frame to house the 5-port CAN distribution board, routing wiring safely down via the wire duct.
+  - Fabricate universal 350mm-length umbilicals (~740mm) using 0.3x3mm spring steel spines to eliminate all OptoTap vertical drag and slack variance on T1.
+  - Terminate umbilicals with modular toolhead strain relief (CW2/SB2209 for current tools; EBB36/DragonBurner compatible for expansion).
+- [ ] **Multi-Tool Fleet Expansion (Hybrid StealthBurner + DragonBurner):**
+  - Maintain T0 (Rapido HF) and T1 (V6) as primary StealthBurners with Clockwork 2 extruders and OptoTap.
+  - Plan expansion of T2–T4 using lightweight DragonBurners (Sherpa Mini / Sharkpa + EBB36) for 5-tool CMYKW Prusa ColorMix or multi-material support.
 - [x] **Software Package Maintenance:**
   - Upgraded Mainsail (`v2.19.0`), KlipperScreen (`v0.4.7-196`), KAMP (`v1.1.2-14`), Sonar (`v0.2.0-2`), and `klipper-backup` (`v1.3.6-7`).
 - [x] **MCU Firmware Upgrade (Katapult / CANBus):**

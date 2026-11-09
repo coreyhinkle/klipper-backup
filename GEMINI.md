@@ -15,6 +15,7 @@ This file provides core operational rules, remote interaction protocols, and sys
 
 ### Configuration Modification Workflow:
 1. **Pre-Flight Idle Gate (MANDATORY):** Before running `FIRMWARE_RESTART`, `RESTART`, or any G-code command, query Moonraker's `print_stats` and `idle_timeout` objects (`curl -s "http://192.168.0.46:7125/printer/objects/query?print_stats&idle_timeout&extruder&extruder1&heater_bed"`) and verify `print_stats.state == "standby"` and `idle_timeout.state != "Printing"`. Never rely on `/printer/info` (`"state": "ready"`) alone to determine if a print is running.
+   - **Echo G-Code to Mainsail Console:** Moonraker's HTTP endpoint (`POST /printer/gcode/script`) executes silently without echoing the sent command string to open Mainsail WebSocket consoles. Prepend `RESPOND PREFIX="AI:" MSG="Running <command>"\n` to every non-restart G-code script sent via HTTP so the user sees the command in the Mainsail Console in real time.
 2. **Retrieve:** Use `scp` to copy target configuration files from `zyper@192.168.0.46:~/printer_data/config/<file>` to a local scratch directory (`scratch/<file>`).
 3. **Modify:** Make and review edits locally. Never leave `.bak` or `.md` files inside `~/printer_data/config/`.
 4. **Deploy:** Upload modified files back to the printer via `scp scratch/<file> zyper@192.168.0.46:~/printer_data/config/<file>`.
@@ -58,3 +59,27 @@ For detailed technical specifications and data tables, consult the modular docum
 - **Enclosure:** DraftChange front door extenders installed (clears front-mounted StealthChanger docks at $Y \approx 1\text{--}2\text{ mm}$ and forward-shifted carriage).
 - **Toolhead Offsets:** Optically verified with sub-50 µm residual error across repetitive docking cycles.
 - **Active State:** System homed, parked safely at bed center ($X=175, Y=175, Z=80$).
+
+---
+
+## 5. Model Ingest & Upstream Source Verification
+- **Automated Ingest Protocol:** When adding or downloading 3D models locally, always supply the upstream source URL upfront via `./stl_viewer/stl-link import <url>` or `./stl_viewer/stl-link <file> --source <url>`.
+- **Integrity Guarantee:** The system automatically computes and verifies cryptographic SHA-256 on arrival and records metadata into `stl_viewer/upstream_sources.json`.
+- **1-Click Navigation:** Models in the Web Viewer (`http://100.92.90.99:8080/`) display a verified source badge and a 1-click external link directly to upstream, completely eliminating the need for post-hoc matching.
+
+---
+
+## 6. Dragon Burner Multi-Tool Architecture (STRICT POLICY: NO CMYK ASSETS)
+
+> [!CRITICAL]
+> **Never use or reference the `Rich-Nelson/voron-stealthchanger-cmyk` repository.**
+> The CMYK repository has been completely deprecated and removed.
+> 
+> - **Cowl:** Official Chirpy Dragon Burner v8 [`Cowl_NoProbe.stl`](file:///home/ai/3d-printing/models/dragonburner/01_Toolhead_and_Extruder/Accent_Color_Print_1x_Each/[a]_Cowl_NoProbe_x1.stl) (~48 mm height). Do NOT use the CMYK cowl (which has tall 18mm standoff ears).
+> - **LEDs:** Stock Chirpy `NeoPixel_Mount` and `[o]_Carrier_Neopixel` designed for standard **10 mm circular/octagonal PCB breakout LEDs** (WS2812B / SK6812 RGBW).
+> - **Extruder:** Official Annex Engineering Sherpa Mini R2 (`Annex-Engineering/Sherpa_Mini-Extruder`).
+> - **Backplate:** Official DraftShift StealthChanger (`DraftShift/StealthChanger/STLs/Backplates/DragonBurner.stl`).
+> - **Docks:** Official DraftShift Modular Docks mounted to the front 2020 crossbar (`DraftShift/ModularDock`). With DraftChange door buffer installed, docks **must strictly use `Top_Crossbar.stl` and `Bottom_Crossbar.stl`** (`STLs/Frame/2020/`). Never use stock non-crossbar `Top.stl` or `Bottom.stl`.
+> - **Excluded Parts:** No CMYK cowls, no `ebb36-strain-relief-cover`, no flat spring steel umbilical brackets, and no stock non-crossbar `Top.stl`/`Bottom.stl` dock frames.
+
+

@@ -80,8 +80,9 @@ Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2
 ---
 
 ## 5. Chamber & Auxiliary Accessories
-- **Enclosure Doors & Clearances:** **DraftChange Front Door Extenders** installed. Custom outward-offset hinges and perimeter spacers push the front acrylic doors outward past the frame boundary.
+- **Enclosure Doors & Clearances:** **DraftChange Front Door Extenders (Door Buffer)** installed. Custom outward-offset hinges and perimeter spacers push the front acrylic doors outward past the frame boundary.
   - **Dock Clearance:** Provides the necessary clearance for the front-mounted StealthChanger docks ($Y \approx 1\text{--}2\text{ mm}$, $Z \approx 298\text{ mm}$) and carriage shuttle, preventing contact during toolchanges.
+  - **Modular Dock Crossbar Mounting:** Because the door buffer extends the front enclosure forward, all Modular Docks mounted to the front 2020 crossbar strictly require **`Top_Crossbar.stl`** and **`Bottom_Crossbar.stl`** (from `DraftShift/ModularDock/STLs/Frame/2020/`). The stock `Top.stl` and `Bottom.stl` lack the extended drop/clamp geometry and must NOT be used.
   - **Front Accessory Mounting:** The forward clearance also enables mounting front-bed accessories (such as a front-edge nozzle brush or purge wiper) without door interference, utilizing the forward-shifted toolhead reach.
 - **Air Filtration:** Nevermore Micro V5 carbon filter (`[fan_generic Nevermore]` on pin `PF7`).
 - **Display:** BigTreeTech Mini12864 RGB LCD with Neopixel backlights.

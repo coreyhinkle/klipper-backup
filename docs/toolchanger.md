@@ -7,7 +7,8 @@ This document describes the configuration, docking geometry, macros, and operati
 ## 1. System Overview
 - **Plugin:** `viesturz/klipper-toolchanger` (commit `94756df`).
 - **Kinematics & Transformation:** Modern `ToolGcodeTransform` handles nozzle X/Y/Z offsets internally in Python, eliminating legacy `SET_GCODE_OFFSET` conflicts.
-- **Dock Mounting:** Frame-mounted docks located on the **top front extrusion** ($Y \approx 1\text{--}2\text{ mm}$, $Z \approx 298\text{ mm}$), enabled by **DraftChange front door extenders** which space the enclosure doors forward to clear the docks and carriage:
+- **Dock Mounting:** Frame-mounted docks located on the **top front extrusion** ($Y \approx 1\text{--}2\text{ mm}$, $Z \approx 298\text{ mm}$), enabled by **DraftChange front door extenders (door buffer)** which space the enclosure doors forward to clear the docks and carriage:
+  - **Modular Dock Crossbar Requirement:** Docks mounted to the 2020 crossbar with the door buffer **must use `Top_Crossbar.stl` ($Z=40\text{ mm}$ drop) and `Bottom_Crossbar.stl` ($23.12 \times 27.90\text{ mm}$ clamp)** from `DraftShift/ModularDock/STLs/Frame/2020/`. The stock non-crossbar `Top.stl` ($Z=20\text{ mm}$) and `Bottom.stl` are strictly for stock frames without crossbars and will not fit.
   - **Tool 0 (Purple):** Park position `X: 339.25, Y: 1.10, Z: 297.55` ([`sb-2.cfg`](../printer_data/config/sb-2.cfg))
   - **Tool 1 (Green):** Park position `X: 4.00, Y: 2.00, Z: 299.00` ([`ebb-sb-rp2040.cfg`](../printer_data/config/ebb-sb-rp2040.cfg))
 - **Docking Paths:** Configured using the `rods_sb_path` spline in [`toolchanger-2.4.cfg`](../printer_data/config/tapchanger/toolchanger-2.4.cfg):

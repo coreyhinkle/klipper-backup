@@ -17,6 +17,7 @@ This repository contains the configuration, macro suite, and documentation for a
 1. **Pre-Flight Idle Gate (MANDATORY):** Before running `FIRMWARE_RESTART`, `RESTART`, or any G-code command, query Moonraker's `print_stats` and `idle_timeout` objects:
    `curl -s "http://192.168.0.46:7125/printer/objects/query?print_stats&idle_timeout&extruder&extruder1&heater_bed"`
    Verify `print_stats.state == "standby"` and `idle_timeout.state != "Printing"`. (`/printer/info` returns `"state": "ready"` even while actively printing—never rely on `/printer/info` alone to check if a job is running!)
+   - **Echo G-Code to Mainsail Console:** Moonraker's HTTP endpoint (`POST /printer/gcode/script`) executes silently without echoing the sent command string to open Mainsail WebSocket consoles. Prepend `RESPOND PREFIX="AI:" MSG="Running <command>"\n` to every non-restart G-code script sent via HTTP so the user sees the command in the Mainsail Console in real time.
 2. **Retrieve / Inspect:** Inspect config from the printer via `scp zyper@192.168.0.46:~/printer_data/config/<file> scratch/<file>` or directly via Moonraker API (`http://192.168.0.46:7125`).
 3. **Edit & Review:** Make minimal, incremental edits. Do not leave `.bak` or `.md` files inside `~/printer_data/config/`.
 4. **Deploy:** Upload to `zyper@192.168.0.46:~/printer_data/config/<file>`.
@@ -46,6 +47,14 @@ This repository contains the configuration, macro suite, and documentation for a
   - OptoTap sensor on `^EBBCan:gpio22` (`[tool_probe T1]`).
   - Calibrated Offsets relative to T0 (via Nudge): `gcode_x_offset: 0.450`, `gcode_y_offset: -0.250`, `gcode_z_offset: 0.3025`.
   - Dock: Top front frame `X: 4.00, Y: 2.00, Z: 299.00`.
+- **Toolhead 2 (T2 - Dragon Burner, Cyan):**
+  - BTT EBB36 CAN v1.2 STM32G0B1 (`[mcu cyan]`, `canbus_uuid: 108d45e46fd2`, `toolchanger/tools/T2.cfg`).
+  - Thermistor on `TH0` (`cyan:PA3`, `ATC Semitec 104NT-4-R025H42G`), heater on `cyan:PB13` (PID tuned @ 240°C: `40.092 / 13.364 / 30.069`).
+  - Sherpa Mini extruder (`cyan:PD0`/`!PD1`/`!PD2`, TMC2209 `cyan:PA15`, SpreadCycle `stealthchop_threshold: 0`).
+  - OptoTap sensor on `^cyan:PB6` (`[tool_probe T2]`; note OptoTap middle pin `O`/`SIG` maps to EBB36 Pin 3 `PB6`, bottom pin `G` maps to EBB36 Pin 2 `GND`).
+  - NeoPixels on `cyan:PD3` (`chain_count: 3`, `color_order: GRBW`), ADXL345 on `cyan:PB12` (`spi2_PB2_PB11_PB10`).
+- **Toolhead 3 (T3 - Dragon Burner, Yellow):**
+  - BTT EBB36 CAN v1.2 STM32G0B1 (`[mcu yellow]`, `canbus_uuid: ce0655e3d001`, `toolchanger/tools/T3.cfg`).
 - **Enclosure:** **DraftChange front door extenders** installed. Hinges and frame spacers extend the front doors forward, clearing the front docks ($Y \approx 1\text{--}2\text{ mm}$, $Z \approx 298\text{ mm}$) and forward-shifted carriage shuttle.
 
 ---
@@ -100,9 +109,54 @@ This repository contains the configuration, macro suite, and documentation for a
 ## 6. Slicer Profiles & Integration
 
 Tuned PrusaSlicer and SuperSlicer profiles recovered from the Windows workstation are stored in:
-- **Directory**: \`slicer_profiles/\`
-- **Documentation & Review Context**: \`slicer_profiles/README.md\`
+- **Directory**: `slicer_profiles/`
+- **Documentation & Review Context**: `slicer_profiles/README.md`
 - **Key Profiles**:
-  - \`slicer_profiles/prusa_windows_backup/printer/VORON V2 350mm - 0.4mm Nozzle (High Flow) - Custom.ini\` (Active dual-extruder StealthChanger configuration).
-  - \`slicer_profiles/prusa_windows_backup/print/0.20mm Standard @VORON2 - HF0.4mm - Copy.ini\` (Active high-speed Arachne profile).
-  - \`slicer_profiles/whistle_voron_full_sliced_config.ini\` (Full configuration dump from actual Voron slice).
+  - `slicer_profiles/prusa_windows_backup/printer/VORON V2 350mm - 0.4mm Nozzle (High Flow) - Custom.ini` (Active dual-extruder StealthChanger configuration).
+  - `slicer_profiles/prusa_windows_backup/print/0.20mm Standard @VORON2 - HF0.4mm - Copy.ini` (Active high-speed Arachne profile).
+  - `slicer_profiles/whistle_voron_full_sliced_config.ini` (Full configuration dump from actual Voron slice).
+
+---
+
+## 7. Model Ingest & Upstream Source Verification Protocol (MANDATORY FOR ALL AGENTS)
+
+> [!IMPORTANT]
+> **Always Attach Upstream Source Upfront:** Whenever an AI agent or user adds, imports, or downloads an STL/3MF model locally, the upstream source URL MUST be registered and verified upfront. The user must never be required to manually match files after the fact in the UI.
+
+### Automated Commands:
+1. **Direct Ingest from Remote URL (Recommended):**
+   ```bash
+   ./stl_viewer/stl-link import <upstream_url> [--direct-url <direct_url>] [--dir models/<project>] [--name <filename>] [--notes <notes>] [--slice]
+   ```
+   - Automatically derives raw GitHub stream URLs from GitHub blob URLs.
+   - Streams and calculates SHA-256 on arrival.
+   - Verifies 100% byte-for-byte hash integrity.
+   - Records verification in `stl_viewer/upstream_sources.json`.
+   - Generates 1-click Tailscale and LAN 3D plater URLs.
+
+2. **Link Locally Added / Generated Model:**
+   ```bash
+   ./stl_viewer/stl-link <file.stl> --source <upstream_url> [--direct-url <direct_url>] [--notes <notes>]
+   ```
+   - Verifies local file SHA-256 against upstream source and saves status (`exact_match`, `page_linked`, or `derived`).
+
+3. **Web Interface Navigation:**
+   Models with verified upstream sources automatically display a prominent 1-click `🌐 Source ↗` button in the top header and HUD, along with a `[✅ SHA-256 Verified]` badge confirming byte-for-byte fidelity.
+
+---
+
+## 8. Dragon Burner Multi-Tool Architecture (STRICT POLICY: NO CMYK ASSETS)
+
+> [!CRITICAL]
+> **Never use or reference the `Rich-Nelson/voron-stealthchanger-cmyk` repository.**
+> The user is NOT building the CMYK variation. The CMYK repo is completely deprecated and archived.
+> 
+> **Official Upstream Lineage:**
+> - **Cowl & Core:** 100% official Chirpy Dragon Burner v8 (`chirpy2605/voron/tree/main/V0/Dragon_Burner`). Active cowl is [`Cowl_NoProbe.stl`](file:///home/ai/3d-printing/models/dragonburner/01_Toolhead_and_Extruder/Accent_Color_Print_1x_Each/[a]_Cowl_NoProbe_x1.stl) (~48 mm height). Never use the CMYK cowl (which has tall 18mm standoff ears).
+> - **LED System:** Stock Chirpy `NeoPixel_Mount` and `[o]_Carrier_Neopixel` designed for standard **10 mm circular/octagonal PCB breakout LEDs** (WS2812B / SK6812 RGBW).
+> - **Extruder:** 100% official Annex Engineering Sherpa Mini R2 (`Annex-Engineering/Sherpa_Mini-Extruder`).
+> - **Backplate:** 100% official DraftShift StealthChanger (`DraftShift/StealthChanger/STLs/Backplates/DragonBurner.stl`).
+> - **Docks:** 100% official DraftShift Modular Docks mounted to the front 2020 crossbar (`DraftShift/ModularDock`). Because the machine has DraftChange front door extenders (door buffer), docks **must strictly use `Top_Crossbar.stl` and `Bottom_Crossbar.stl`** (`STLs/Frame/2020/`). Never use stock non-crossbar `Top.stl` or `Bottom.stl`.
+> - **Excluded Parts:** No CMYK cowls, no `ebb36-strain-relief-cover`, no flat spring steel umbilical brackets, and no stock non-crossbar `Top.stl`/`Bottom.stl` dock frames.
+
+
