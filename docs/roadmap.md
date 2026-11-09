@@ -68,11 +68,10 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - [ ] **T3 (`yellow`) Assembly & Bring-Up:**
     - Assemble `T3` hardware, uncomment [`T3.cfg`](../printer_data/config/toolchanger/tools/T3.cfg), and repeat peripheral verification, PID, extruder calibration, dock parking, and Nudge offset calibration.
 - [ ] **Thermal / Electronics Cooling:** Install top-mount heatsink / active cooler on Raspberry Pi CM5 SoC. Revert/automate skirt fans in [`printer.cfg`](../printer_data/config/printer.cfg#L239-L251) (currently set to temporary `fan_generic` for manual cooling).
-- [ ] **Umbilical Management & CAN Hub Upgrade (Top Frame & Rear):**
-  - Print and install DraftShift/N3MI **Voron 350 5-Tool Umbilical Plate** on top rear 2020 extrusion with ECAS04 PTFE collets and 0.3x3mm spring steel relief anchors.
-  - Print and mount **Fanny Pack** enclosure on rear frame to house the 5-port CAN distribution board, routing wiring safely down via the wire duct.
-  - Fabricate universal 350mm-length umbilicals (~740mm) using 0.3x3mm spring steel spines to eliminate all OptoTap vertical drag and slack variance on T1.
-  - Terminate umbilicals with modular toolhead strain relief (CW2/SB2209 for current tools; EBB36/DragonBurner compatible for expansion).
+- [x] **Umbilical Management & Fanny Pack Suite (Top Frame & Rear):**
+  - [x] **Printed & Mostly Installed:** DraftShift/N3MI **Voron 350 6-Tool Umbilical Plate** (`Voron350_Plate_6_Tools_Threaded_Version`) and **Fanny Pack** enclosure printed and mounted on the rear frame/crossbar over the upper exhaust opening. Houses ECAS04 PTFE collets, wire duct, and relief anchor slots.
+  - [ ] **Umbilical Fabrication & Tension Tuning:** Finalize universal 350mm-length umbilicals (~740mm) using 0.3x3mm spring steel spines to eliminate OptoTap vertical drag and slack variance across all tools.
+  - [ ] **CAN Distribution Board Finalization:** Secure distribution board inside Fanny Pack (BTT CEB v1.0 / Birds' Nest CAN) and wire down to electronics bay.
 - [ ] **Multi-Tool Fleet Expansion (Hybrid StealthBurner + DragonBurner):**
   - Maintain T0 (Rapido HF) and T1 (V6) as primary StealthBurners with Clockwork 2 extruders and OptoTap.
   - Plan expansion of T2–T4 using lightweight DragonBurners (Sherpa Mini / Sharkpa + EBB36) for 5-tool CMYKW Prusa ColorMix or multi-material support.
