@@ -71,7 +71,7 @@ This document tracks completed milestones, active tuning tasks, and future optim
 - [x] **Umbilical Management & Fanny Pack Suite (Top Frame & Rear):**
   - [x] **Printed & Mostly Installed:** DraftShift/N3MI **Voron 350 6-Tool Umbilical Plate** (`Voron350_Plate_6_Tools_Threaded_Version`) and **Fanny Pack** enclosure printed and mounted on the rear frame/crossbar over the upper exhaust opening. Houses ECAS04 PTFE collets, wire duct, and relief anchor slots.
   - [ ] **Umbilical Fabrication & Tension Tuning:** Finalize universal 350mm-length umbilicals (~740mm) using 0.3x3mm spring steel spines to eliminate OptoTap vertical drag and slack variance across all tools.
-  - [ ] **CAN Distribution Board Finalization:** Secure distribution board inside Fanny Pack (BTT CEB v1.0 / Birds' Nest CAN) and wire down to electronics bay.
+  - [ ] **CAN Distribution Board Finalization:** FYSETC Hexa Distro Fusion V1.3 ordered (AliExpress, 2026-11-09); prepare Fanny Pack mounting (`Main Bracket x1 [Hexa v1.3]`), 24V power trunk, and USB-C data cable run from host CM5.
 - [ ] **Multi-Tool Fleet Expansion (Hybrid StealthBurner + DragonBurner):**
   - Maintain T0 (Rapido HF) and T1 (V6) as primary StealthBurners with Clockwork 2 extruders and OptoTap.
   - Plan expansion of T2–T4 using lightweight DragonBurners (Sherpa Mini / Sharkpa + EBB36) for 5-tool CMYKW Prusa ColorMix or multi-material support.
