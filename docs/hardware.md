@@ -33,7 +33,7 @@ Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2
 - **Operational Status:** Serves as the global coordinate reference (`gcode_x_offset: 0`, `gcode_y_offset: 0`, `gcode_z_offset: 0`).
 
 ### Toolhead 1 (T1 - Green StealthBurner)
-- **Toolhead MCU:** BTT EBB SB2209 RP2040 (`[mcu EBBCan]`, `canbus_uuid: a7f6c7cc913a`, from original Formbot kit).
+- **Toolhead MCU:** BTT EBB SB2209 RP2040 (`[mcu green]`, `canbus_uuid: a7f6c7cc913a`, from original Formbot kit).
 - **Hotend:** Voron / V6 clone hotend (0.4mm nozzle, from Formbot kit).
   - Temperature Sensor: PT1000/PT100 via onboard MAX31865 RTD amplifier (`EBBCan:gpio9`).
 - **Extruder:** Clockwork 2 (CW2) with Formbot kit / Amazon (`B09WQYHBZY`) BMG dual-gear kit.

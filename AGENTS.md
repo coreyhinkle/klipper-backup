@@ -41,10 +41,10 @@ This repository contains the configuration, macro suite, and documentation for a
   - Coordinate reference: `gcode_x_offset: 0`, `gcode_y_offset: 0`, `gcode_z_offset: 0`.
   - Dock: Top front frame `X: 339.25, Y: 1.10, Z: 297.55`.
 - **Toolhead 1 (T1 - Secondary, Green):**
-  - EBB SB2209 RP2040 (`canbus_uuid: a7f6c7cc913a`).
+  - EBB SB2209 RP2040 (`[mcu green]`, `canbus_uuid: a7f6c7cc913a`).
   - V6 hotend (0.4mm nozzle), MAX31865 RTD.
   - CW2 Extruder, SpreadCycle (`stealthchop_threshold: 0`).
-  - OptoTap sensor on `^EBBCan:gpio22` (`[tool_probe T1]`).
+  - OptoTap sensor on `^green:gpio22` (`[tool_probe T1]`).
   - Calibrated Offsets relative to T0 (via Nudge): `gcode_x_offset: 0.450`, `gcode_y_offset: -0.250`, `gcode_z_offset: 0.3025`.
   - Dock: Top front frame `X: 4.00, Y: 2.00, Z: 299.00`.
 - **Toolhead 2 (T2 - Dragon Burner, Cyan):**
