@@ -56,6 +56,8 @@ This document tracks completed milestones, active tuning tasks, and future optim
     - Confirm pinion gear tooth count (`gear_ratio: 50:10` vs `50:8`) and run 100 mm filament extrusion calibration to dial in `rotation_distance` (currently `22.67895` in [`T2.cfg`](../printer_data/config/toolchanger/tools/T2.cfg)).
   - [ ] **T2 Physical Assembly & Hardware Tuning:**
     - Install support brace across the back of `T2` (`cyan`).
+    - Secure wires and umbilical to eliminate noise/vibration during motion.
+    - Run Input Shaper resonance testing using `[adxl345 T2]` and update `params_input_shaper_*` in [`T2.cfg`](../printer_data/config/toolchanger/tools/T2.cfg).
     - Finish assembling and mounting `T2`'s DraftShift Modular Dock (`Top_Crossbar.stl` / `Bottom_Crossbar.stl`) on the front 2020 crossbar.
     - Calibrate and save `params_park_x`, `params_park_y`, `params_park_z` in `[tool T2]` ([`T2.cfg`](../printer_data/config/toolchanger/tools/T2.cfg)) and verify clean dropoff/pickup cycles. *(Do NOT run `T0`, `T1`, or `UNSELECT_TOOL` while `T2` is on the shuttle until `T2`'s dock is mounted and calibrated!)*
   - [ ] **Recalculate Nudge Probe Position (`_CALIBRATION_SWITCH`):**
@@ -63,8 +65,6 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - [ ] **T2 Probe Z-Offset & Tool X/Y/Z Offset Calibration:**
     - Calibrate `[tool_probe T2]` `z_offset` (write manually into [`T2.cfg`](../printer_data/config/toolchanger/tools/T2.cfg); never use `SAVE_CONFIG`).
     - Run Nudge calibration to set `gcode_x_offset`, `gcode_y_offset`, and `gcode_z_offset` on `T2` relative to `T0`.
-  - [ ] **T2 Input Shaper Calibration:**
-    - Run resonance testing using `[adxl345 T2]` and update `params_input_shaper_*` in [`T2.cfg`](../printer_data/config/toolchanger/tools/T2.cfg).
   - [ ] **T3 (`yellow`) Assembly & Bring-Up:**
     - Assemble `T3` hardware, uncomment [`T3.cfg`](../printer_data/config/toolchanger/tools/T3.cfg), and repeat peripheral verification, PID, extruder calibration, dock parking, and Nudge offset calibration.
 - [ ] **Thermal / Electronics Cooling:** Install top-mount heatsink / active cooler on Raspberry Pi CM5 SoC. Revert/automate skirt fans in [`printer.cfg`](../printer_data/config/printer.cfg#L239-L251) (currently set to temporary `fan_generic` for manual cooling).
