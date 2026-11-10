@@ -15,8 +15,9 @@ All technical documentation has been organized into modular guides:
 | 🔧 **[Hardware & Electronics](docs/hardware.md)** | Machine specs, CM5 host, Manta M8P V2, Toolheads (T0 Rapido HF / T1 V6), OptoTap probes, and CAN bus star topology. |
 | 🚀 **[Kinematics & Speed Benchmarks](docs/benchmarks.md)** | Empirical Z ladder test (15–80 mm/s), 50 mm/s qualification, top-dock travel math, and live stopwatch toolchange benchmarks. |
 | 🔄 **[Toolchanger Architecture & Macros](docs/toolchanger.md)** | StealthChanger docking splines, top-frame park coordinates, macro suite (`T0`, `T1`, `UNSELECT_TOOL`), and operational conventions. |
-| 🛠️ **[Troubleshooting & Bug Fixes](docs/troubleshooting.md)** | Root-cause write-ups and permanent fixes for toolchange coordinate corruption, pickup crash detection timing, and probe sample drift. |
+| 🛠️ **[Troubleshooting & Bug Fixes](docs/troubleshooting.md)** | Root-cause write-ups and permanent fixes for toolchange coordinate corruption, pickup crash detection timing, probe sample drift, and `"Timer too close"` (TTC) history. |
 | 📋 **[Tuning Roadmap & Audit Checklist](docs/roadmap.md)** | Completed milestones, active tasks (XY speed tuning to 400 mm/s, umbilical tension wire), and future optimizations. |
+| 📦 **[Software & Firmware Version Manifest](docs/VERSION_MANIFEST.md)** | Auto-tracked Klipper host & per-MCU firmware SHAs (`RECEIVE_WINDOW`), extension git commits (`klipper-toolchanger-easy`, `moonraker`, `KAMP`), and historical version milestones. |
 
 ---
 

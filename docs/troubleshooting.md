@@ -99,3 +99,44 @@ After upgrading Klipper to `v0.13.0-800` and merging `klipper-toolchanger` PR #1
 4. **PID Oscillation Tolerance in `pickup_gcode` ([`tapchanger/toolchanger-2.4.cfg`](../printer_data/config/tapchanger/toolchanger-2.4.cfg)):**
    - Updated `TEMPERATURE_WAIT` during tool pickup to use `SENSOR={tool.extruder}` with a `1.0°C` tolerance (`MINIMUM={[printer[tool.extruder].target - 1.0, 0]|max}`), preventing multi-second stalls inside the dock when PID hovers at `0.1°C` below target.
 
+---
+
+## 7. Historical `"Timer too close"` (TTC) Investigation, Upstream Fixes & Prevention
+
+### Symptom (February – March 2026):
+When bringing the dual-toolhead StealthChanger back online in February 2026 on the original **BigTreeTech CB1** host, the printer suffered frequent `"Timer too close"` (TTC) and `trsync` communication timeout aborts during homing, probing, and dense multi-axis moves.
+
+### Forensic Timeline in Repository (`coreyhinkle/klipper-backup`):
+| Date | Commit(s) | Action Taken / System State |
+|:---|:---|:---|
+| **Jan – Apr 2025** | `e467b23` $\to$ `c8eb5d3` | Initial Voron 2.4 + StealthChanger bring-up on **BTT CB1** (`/home/biqu`, Allwinner H616, 1 GB RAM, Linux 5.16 sunxi kernel) with Manta M8P V2.0 USB-to-CAN bridge and two EBB SB2209 RP2040 toolheads (`purple`, `EBBCan`) running early-2025 Klipper (`v0.12.0` / early `v0.13.0`). |
+| **2026-02-15** | `0fd67df`, `5a3681c` | Removed `stealthchop_threshold: 999999` on `[tmc2209 extruder]` (`sb-2.cfg`) and `[tmc2209 extruder1]` (`ebb-sb-rp2040.cfg`), switching both CAN toolhead extruders to **SpreadCycle** (`stealthchop_threshold: 0`) to reduce CAN step/direction traffic during Pressure Advance reversals. |
+| **2026-02-15** | `0d2a7f2` | Commented out `#[include ktamv-macros.cfg]` in `printer.cfg` (after removing `[update_manager ktamv]` in `bc99180`) to eliminate background OpenCV/camera CPU contention on the CB1. |
+| **2026-02-16** | `9432ad1` $\to$ `4b8b46b`, `4cb80f2` | Added `# Increased to 0.05 to debug "Timer too close" errors on CB1` and `trsync_start_timeout: 0.05` under `[mcu purple]` and `[mcu EBBCan]`, then removed it 5 minutes later (as `TRSYNC_TIMEOUT` is an internal constant in `klippy/mcu.py`, not a valid `[mcu]` config key). |
+| **2026-03-13** | `34834ca` | Audited physical CAN bus termination jumpers across the star topology (`T0` 120Ω **ON**, `Manta M8P` 120Ω **ON**, `T1` 120Ω **OFF** = **60Ω total bus resistance**). |
+| **2026-03-22** | `10d23ca` | **Host Hardware & OS Migration (`BTT CB1` $\to$ `Raspberry Pi CM5`):** Replaced the BTT CB1 (`/home/biqu`) with a **Raspberry Pi Compute Module 5 Rev 1.0** (`/home/zyper`, Debian Bookworm `Linux 6.12.75+rpt-rpi-2712`) and updated Klipper host to `v0.13.0-583-g594ec7e1` (`2026-03-21`). |
+| **2026-10-18** | `db57d02`, `c8098de`, `c63775d` | Standardized `can0` on **`txqueuelen 128`** via `/etc/udev/rules.d/10-can.rules` (removing legacy `txqueuelen 1024` buffer bloat) and flashed all MCUs (`Manta M8P STM32H723`, `T0 RP2040`, `T1 RP2040`, and later `T2/T3 STM32G0B1`) via Katapult to **`v0.13.0-800-g9cb99754`** (`2026-10-13`). |
+
+### Upstream `Klipper3d/klipper` Fixes That Resolved the Root Causes:
+Between the initial early-2025 firmware flash and the 2026 upgrades (`v0.13.0-583` $\to$ `v0.13.0-800`), upstream Klipper merged **six architectural fixes** directly addressing CAN bus and multi-MCU `"Timer too close"` errors:
+
+1. **USB-to-CAN Bridge Tx Wakeup Race Fix (`581c954f` & `2c90c97c` — 2025-02-27, `src/generic/usb_canbus.c`):**
+   - Fixed a race condition in Klipper's USB-to-CAN bridge MCU firmware (running on the Manta M8P V2.0) where `canbus_send()` failed to wake `usbcan_task` when USB bandwidth freed up right before a wakeup notification, delaying USB echo frames back to the Linux kernel and stalling the CAN queue. *(Required reflashing the Manta M8P MCU firmware to take effect.)*
+2. **Per-Stepper Multithreaded Step Compression (`a89694ac`, `3ef4702e`, `e78d11bc` — 2025-09-08 to 2025-09-24, `steppersync.c`):**
+   - Moved `stepcompress` calculation out of Klipper's single main reactor thread into **dedicated C background worker threads per stepper** sending directly from `syncemitter` to `serialqueue`, eliminating host CPU stalls during simultaneous 4× Z + 2× XY + extruder motion.
+3. **Non-Blocking LED Reactor Updates (`6a8b823a` — 2025-10-18, `klippy/extras/neopixel.py`):**
+   - Moved `led.py` update functions into asynchronous reactor callbacks so StealthBurner `STATUS_*` NeoPixel changes no longer execute inside the motion lookahead/flush context where pauses previously delayed time-critical step transmission.
+4. **Decoupled `serialqueue` Locks & `MIN_REQTIME_DELTA` Tuning (`46af1336`, `804a9d11`, `2e580237` — Nov/Dec 2025, `serialqueue.c`):**
+   - Split the monolithic mutex in `serialqueue.c` into separate locks for `pending`, `ready`, `transmit_requests`, and `receive` threads, and reduced `MIN_REQTIME_DELTA` from `250ms` to `100ms` so a full MCU `move_queue` no longer flushes dozens of tiny unbatched single-command CAN packets microseconds apart.
+5. **Endstop Homing `trsync` `reqclock` Fix (`8e6e467e` — 2025-12-14, `klippy/mcu.py`):**
+   - Fixed a bug where `trsync` configuration messages during homing/probing were scheduled with a later `reqclock` than the `endstop_home` start command itself—directly resolving the CAN toolhead homing/probing `trsync` timeouts that prompted the Feb 16, 2026 `trsync_start_timeout: 0.05` test.
+6. **Doubled MCU CAN `transmit_buf` (`85c79bc4` & `ed1f9963` — 2026-05-25, `src/generic/canserial.c`):**
+   - Increased the microcontroller CAN transmit buffer (`RECEIVE_WINDOW`) from `96 bytes` to **`192 bytes`** and enabled low-space command encoding. Applied across all boards when reflashed to `v0.13.0-800-g9cb99754` in October 2026.
+
+### Remaining Hardware Risks to Watch During 4–6 Tool Scaling:
+With the **Raspberry Pi CM5**, **`txqueuelen 128`**, **SpreadCycle extruders**, and **`v0.13.0-800-g9cb99754`** across host and all MCUs, software-induced `"Timer too close"` errors are resolved. The only remaining ways a TTC or MCU dropout can occur are physical/electrical:
+1. **24V PSU Overload / Voltage Sag (`LRS-200-24`):** Heating multiple hotends simultaneously during fast gantry motion can overload the stock 200W PSU, causing voltage dips below ~20V that brown out toolhead CAN transceivers. Follow the [Interim 24V Operating Rules](hardware.md#interim-operating-rules-while-running-lrs-200-24) until the **Mean Well LRS-350-24 (350W)** upgrade is installed.
+2. **Improper CAN Termination Jumpers:** Maintain strictly **two** 120Ω termination resistors across the entire CAN bus (`60Ω` total). Never enable 120Ω jumpers on additional expansion toolheads (`T2`–`T5`).
+3. **Umbilical Wire / Connector Fatigue:** Monitor `bytes_retransmit` and `bytes_invalid` in Moonraker MCU stats (`docs/versions.json` / `klippy.log`); rising retransmits on a single toolhead indicate a loose Micro-Fit/XT30 pin or fatigued CAN wire in that tool's umbilical.
+
+

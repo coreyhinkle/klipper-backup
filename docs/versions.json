@@ -1,0 +1,187 @@
+{
+  "host": {
+    "board_model": "Raspberry Pi Compute Module 5 Rev 1.0",
+    "can0": {
+      "bitrate": 1000000,
+      "txqueuelen": 128
+    },
+    "kernel": "6.12.109+rpt-rpi-2712",
+    "os_release": "Debian GNU/Linux 12 (bookworm)"
+  },
+  "mcus": {
+    "mcu": {
+      "board": "BTT Manta M8P V2.0",
+      "canbus_uuid": "3d2cb7337ea8",
+      "chip": "stm32h723xx",
+      "clock_freq": 520000000,
+      "kconfig": [
+        "CONFIG_LOW_LEVEL_OPTIONS=y",
+        "CONFIG_MACH_STM32=y",
+        "CONFIG_MACH_STM32H723=y",
+        "CONFIG_STM32_CLOCK_REF_25M=y",
+        "CONFIG_STM32_USBCANBUS_PA11_PA12=y",
+        "CONFIG_STM32_CMENU_CANBUS_PD0_PD1=y"
+      ],
+      "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
+      "mcu_version": "v0.13.0-800-g9cb99754",
+      "receive_window": 192,
+      "role": "Mainboard / USB-to-CAN Bridge"
+    },
+    "mcu cyan": {
+      "board": "BTT EBB36 CAN v1.2 (STM32G0B1)",
+      "canbus_uuid": "108d45e46fd2",
+      "chip": "stm32g0b1xx",
+      "clock_freq": 64000000,
+      "kconfig": [
+        "CONFIG_LOW_LEVEL_OPTIONS=y",
+        "CONFIG_MACH_STM32=y",
+        "CONFIG_MACH_STM32G0B1=y",
+        "CONFIG_STM32_MMENU_CANBUS_PB0_PB1=y"
+      ],
+      "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
+      "mcu_version": "v0.13.0-800-g9cb99754",
+      "receive_window": 192,
+      "role": "Toolhead 2 (T2 - Dragon Burner)"
+    },
+    "mcu green": {
+      "board": "BTT EBB SB2209 CAN v1.0 (RP2040)",
+      "canbus_uuid": "a7f6c7cc913a",
+      "chip": "rp2040",
+      "clock_freq": 12000000,
+      "kconfig": [
+        "CONFIG_LOW_LEVEL_OPTIONS=y",
+        "CONFIG_MACH_RPXXXX=y",
+        "CONFIG_RPXXXX_FLASH_START_4000=y",
+        "CONFIG_RPXXXX_CANBUS=y",
+        "CONFIG_INITIAL_PINS=\"gpio26\""
+      ],
+      "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
+      "mcu_version": "v0.13.0-800-g9cb99754",
+      "receive_window": 192,
+      "role": "Toolhead 1 (T1 - Secondary, StealthBurner V6)"
+    },
+    "mcu purple": {
+      "board": "BTT EBB SB2209 CAN v1.0 (RP2040)",
+      "canbus_uuid": "4445b54fe351",
+      "chip": "rp2040",
+      "clock_freq": 12000000,
+      "kconfig": [
+        "CONFIG_LOW_LEVEL_OPTIONS=y",
+        "CONFIG_MACH_RPXXXX=y",
+        "CONFIG_RPXXXX_FLASH_START_4000=y",
+        "CONFIG_RPXXXX_CANBUS=y",
+        "CONFIG_INITIAL_PINS=\"gpio26\""
+      ],
+      "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
+      "mcu_version": "v0.13.0-800-g9cb99754",
+      "receive_window": 192,
+      "role": "Toolhead 0 (T0 - Master Reference, StealthBurner Rapido HF)"
+    },
+    "mcu yellow": {
+      "board": "BTT EBB36 CAN v1.2 (STM32G0B1)",
+      "canbus_uuid": "ce0655e3d001",
+      "chip": "stm32g0b1xx",
+      "clock_freq": 64000000,
+      "kconfig": [
+        "CONFIG_LOW_LEVEL_OPTIONS=y",
+        "CONFIG_MACH_STM32=y",
+        "CONFIG_MACH_STM32G0B1=y",
+        "CONFIG_STM32_MMENU_CANBUS_PB0_PB1=y"
+      ],
+      "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
+      "mcu_version": "v0.13.0-800-g9cb99754",
+      "receive_window": 192,
+      "role": "Toolhead 3 (T3 - Dragon Burner, Standby/Unmounted)"
+    }
+  },
+  "software": {
+    "Klipper-Adaptive-Meshing-Purging": {
+      "branch": "main",
+      "commit": "997838cb",
+      "commit_date": "2026-09-13",
+      "origin": "https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git",
+      "version": "v1.1.2-14-g997838c"
+    },
+    "KlipperScreen": {
+      "branch": "master",
+      "commit": "34610cea",
+      "commit_date": "2026-10-25",
+      "origin": "https://github.com/KlipperScreen/KlipperScreen.git",
+      "version": "v0.4.7-205-g34610ce"
+    },
+    "crowsnest": {
+      "branch": "master",
+      "commit": "9cc3d4af",
+      "commit_date": "2025-10-07",
+      "origin": "https://github.com/mainsail-crew/crowsnest.git",
+      "version": "v4.1.17-1-g9cc3d4a"
+    },
+    "katapult": {
+      "branch": "master",
+      "commit": "32584cbb",
+      "commit_date": "2026-03-05",
+      "origin": "https://github.com/Arksine/katapult",
+      "version": "v0.0.1-111-g32584cb"
+    },
+    "klipper": {
+      "branch": "master",
+      "commit": "9cb99754",
+      "commit_date": "2026-10-13",
+      "origin": "https://github.com/Klipper3d/klipper",
+      "version": "v0.13.0-800-g9cb99754"
+    },
+    "klipper-backup": {
+      "branch": "main",
+      "commit": "32f42e8e",
+      "commit_date": "2026-10-13",
+      "origin": "https://github.com/Staubgeborener/klipper-backup.git",
+      "version": "v1.3.6-7-g32f42e8"
+    },
+    "klipper-toolchanger": {
+      "branch": "main",
+      "commit": "9e69d6ac",
+      "commit_date": "2026-10-19",
+      "origin": "https://github.com/viesturz/klipper-toolchanger.git",
+      "version": "9e69d6a"
+    },
+    "klipper-toolchanger-easy": {
+      "branch": "main",
+      "commit": "e881fe40",
+      "commit_date": "2026-07-30",
+      "origin": "https://github.com/jwellman80/klipper-toolchanger-easy.git",
+      "version": "e881fe4"
+    },
+    "mainsail": {
+      "origin": "https://github.com/mainsail-crew/mainsail",
+      "version": "v2.19.0"
+    },
+    "mainsail-config": {
+      "branch": "master",
+      "commit": "ff3869a6",
+      "commit_date": "2024-11-24",
+      "origin": "https://github.com/mainsail-crew/mainsail-config.git",
+      "version": "v1.2.1-1-gff3869a"
+    },
+    "moonraker": {
+      "branch": "master",
+      "commit": "b559b9a8",
+      "commit_date": "2026-10-21",
+      "origin": "https://github.com/Arksine/moonraker",
+      "version": "v0.11.0-4-gb559b9a"
+    },
+    "moonraker-timelapse": {
+      "branch": "main",
+      "commit": "c7fff11e",
+      "commit_date": "2023-12-16",
+      "origin": "https://github.com/mainsail-crew/moonraker-timelapse.git",
+      "version": "v0.0.1-143-gc7fff11"
+    },
+    "sonar": {
+      "branch": "main",
+      "commit": "74494cc3",
+      "commit_date": "2026-09-22",
+      "origin": "https://github.com/mainsail-crew/sonar.git",
+      "version": "v0.2.0-2-g74494cc"
+    }
+  }
+}
