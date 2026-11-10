@@ -33,7 +33,7 @@ This file provides core operational rules, remote interaction protocols, and sys
 
 For detailed technical specifications and data tables, consult the modular documentation in `docs/`:
 
-- **Hardware & Electronics:** See [`docs/hardware.md`](docs/hardware.md) for CM5 host specs, Manta M8P V2 wiring, CAN bus star topology, 60-ohm termination jumper settings, and toolhead specs.
+- **Hardware & Electronics:** See [`docs/hardware.md`](docs/hardware.md) for CM5 host specs, 24V power supply architecture & multi-tool budget, Manta M8P V2 wiring, CAN bus star topology, 60-ohm termination jumper settings, and toolhead specs.
 - **Kinematics & Speed Benchmarks:** See [`docs/benchmarks.md`](docs/benchmarks.md) for the empirical Z speed ladder data (15 to 80 mm/s), 24V back-EMF physics, top-dock 600mm travel math, stopwatch toolchange benchmarks, and QGL verification.
 - **Toolchanger Architecture:** See [`docs/toolchanger.md`](docs/toolchanger.md) for StealthChanger docking splines, park coordinates, macros, and operational conventions.
 - **Troubleshooting & Fixes:** See [`docs/troubleshooting.md`](docs/troubleshooting.md) for root-cause analyses on resolved toolchange bugs (offset doubling, premature pickup crash detection, and OptoTap cable drag).

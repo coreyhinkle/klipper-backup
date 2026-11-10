@@ -15,7 +15,65 @@ This document details the physical hardware, electronics, toolhead components, a
 
 ---
 
-## 2. Toolhead Configurations
+## 2. Power Architecture & 24V DC Budget (6-Tool Fleet)
+
+### Active Hardware Baseline
+- **Installed 24V DC Power Supply:** **Mean Well LRS-200-24** (200W, 24V @ 8.8A, passively cooled, from original Formbot kit).
+- **Target Upgrade Power Supply:** **Mean Well LRS-350-24** (350W, 24V @ 14.6A, actively cooled, direct drop-in replacement on Voron DIN rail mounts).
+- **AC Mains Heated Bed:** Keenovo-style silicone bed heater powered directly via 110V/220V AC mains through an Omron G3NA-210B-DC5 SSR (`PA1`, clamped to `max_power: 0.6` in [`printer.cfg`](../printer_data/config/printer.cfg)). The heated bed draws **0 Watts** from the 24V DC power supply.
+
+### 24V DC Load Breakdown (6-Tool Fleet)
+
+| Subsystem | Typical Draw | Peak / Transient Draw | Notes |
+|:---|:---|:---|:---|
+| **CoreXY Motion (A/B Steppers)** | ~25W | ~45W | TMC2209 @ `1.0A` RMS under rapid CoreXY direction changes. |
+| **Z-Axis Flying Gantry (4x Z Steppers)** | ~5W | ~35W | SpreadCycle; low continuous draw during layer hops, transient peak during 50 mm/s rapid transit & QGL. |
+| **Base Electronics & Skirt Cooling** | ~10W | ~12W | Manta M8P V2.0 + Raspberry Pi CM5 host. |
+| **Chamber Filtration & Auxiliary Fans** | ~10W | ~15W | Nevermore Micro V5 (`PF7`) + chamber exhaust (`PF8`). |
+| **6x Toolhead CAN Boards Logic** | ~12W | ~15W | 6x EBB boards (SB2209 / EBB36) @ ~2W each idle (MCUs + CAN transceivers). |
+| **Toolhead NeoPixel Lighting** | ~3W | ~6W | Parked/active tool LEDs. |
+| **Active Tool Extruder Stepper** | ~5W | ~8W | Only the currently active toolhead extruder motor is driven. |
+| **Active Tool Hotend (T0 Rapido HF)** | ~45W (PID) | **115W (100% PWM)** | Phaetus Rapido ceramic heater core pulls ~4.8A at peak inrush. |
+| **Active Tool Hotend (T1-T5 Dragon/V6)** | ~25W (PID) | ~50W (100% PWM) | Standard 40W–50W heater cartridges. |
+| **Parked Standby Heat (5 parked tools @ 150°C)** | ~50W–75W | ~75W | ~10W–15W per parked hotend to maintain 150°C in an enclosed chamber. |
+| **Parked Toolhead Heatsink Fans** | ~12.5W | ~12.5W | 5x 3010/4010 fans running continuously when hotends are >50°C. |
+
+### Operational Modes & Power Supply Demands
+
+1. **Strict Single-Tool Mode (Cold Standby / Inactive Tools Off at 0°C):**
+   - **Continuous Running Load:** $\approx 115\text{--}130\text{ W}$ (within LRS-200 limits).
+   - **Peak Transient Load:** Up to **$225\text{--}245\text{ W}$** when T0's Rapido HF ramps up at 100% PWM while CoreXY and Z axes are moving fast.
+   - **Status:** Operates at 110%–120% of the LRS-200's continuous rating during heating spikes, risking voltage dips.
+
+2. **Standard Multi-Material Toolchanger Mode (150°C Standby + Overlap Preheat):**
+   - Real-world multi-tool printing requires standby temperatures (~150°C) on parked tools to avoid 45-second heating dwells per toolchange.
+   - Furthermore, slicers and macros use **preheat overlap** (ramping the incoming tool 15–20s before tool swap while the outgoing tool is still finishing its extrusion).
+   - **Continuous Running Load:** $\approx 185\text{--}210\text{ W}$.
+   - **Peak Transient Load (Overlap Swap with T0):** Up to **$300\text{--}320\text{ W}$**.
+   - **Status:** **Exceeds LRS-200 capacity.** Mandates upgrade to **Mean Well LRS-350-24**.
+
+### Failure Modes of an Overloaded LRS-200-24
+
+- **Fire Hazard:** **None.** Genuine Mean Well power supplies are equipped with Over-Current Protection (OCP / Hiccup Mode) and Over-Temperature Protection (OTP). They safely cut or pulse output power rather than overheating or catching fire.
+- **Electrical Hardware Damage:** **None.** Stepper drivers and MCUs feature Under-Voltage Lockout (UVLO) to prevent electrical damage.
+- **Mechanical Damage Risk (Gantry & Docking):** **HIGH.**
+  - If the 24V supply enters hiccup mode mid-move, the 4 Z steppers lose holding torque, causing the heavy flying gantry to drop or rack.
+  - If power cuts while the carriage shuttle is entering or exiting a tool dock ($Y \le 35\text{ mm}$), unpowered momentum can cause the carriage to bind or collide with dock arms, **snapping 3D-printed dock brackets, breaking carriage latch tabs, or bending dock pins.**
+- **Operational Failures:**
+  - **CAN Bus Dropout:** Voltage sag below ~20V starves toolhead buck converters, dropping CAN transceivers and triggering fatal Klipper aborts: `Lost communication with MCU 'EBBCan'` or `Timer too close`.
+  - **ADC Out of Range:** Voltage dips induce noise on thermistor/PT1000 analog reference lines, tripping safety halts.
+  - **Thermal Shutdown in Electronics Bay:** The fanless LRS-200 runs near 100% capacity in a 45°C enclosed electronics bay, tripping OTP after 1–2 hours.
+
+### Interim Operating Rules (While Running LRS-200-24)
+Before upgrading to the LRS-350-24, adhere strictly to these operational safeguards:
+1. **Cold Standby Only:** Set parked tool standby temperatures to `0°C` in slicer profiles and toolchange macros. Never hold parked tools at temperature.
+2. **Sequential Preheating:** Heat the bed first, then heat one hotend at a time during `PRINT_START`. Never heat multiple tools in parallel.
+3. **Soft-Cap T0 Rapido HF:** Add `max_power: 0.80` under `[extruder]` in [`toolchanger/tools/T0.cfg`](../printer_data/config/toolchanger/tools/T0.cfg) to clamp maximum ceramic heater draw from 115W down to ~92W.
+4. **Fusing:** Ensure the 24V trunk to the distribution board (FYSETC Hexa Distro Fusion V1.3 in the Fanny Pack) has individual 5A or 7.5A fuses per toolhead branch.
+
+---
+
+## 3. Toolhead Configurations
 
 Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2) extruders mounted to the StealthChanger carriage shuttle.
 
@@ -49,7 +107,7 @@ Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2
 
 ---
 
-## 3. Umbilical Cable Suspension & Wire Tension
+## 4. Umbilical Cable Suspension & Wire Tension
 - **Overhead Harness Setup:** Toolhead CAN and power cables run overhead to keep the gantry clear.
 - **Current Baseline:** 
   - T0's umbilical suspension wire is taut.
@@ -63,7 +121,7 @@ Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2
 
 ---
 
-## 4. CAN Bus Network Architecture
+## 5. CAN Bus Network Architecture
 - **Bitrate:** `1000000` (1 Mbps).
 - **Network Interface Management:** Managed via `systemd-networkd` (`/etc/systemd/network/25-can.network`).
 - **Queue Length (`txqueuelen`):** **`128`** via `/etc/udev/rules.d/10-can.rules`.
@@ -79,7 +137,7 @@ Both toolheads utilize the StealthBurner toolhead assembly with Clockwork 2 (CW2
 
 ---
 
-## 5. Chamber & Auxiliary Accessories
+## 6. Chamber & Auxiliary Accessories
 - **Enclosure Doors & Clearances:** **DraftChange Front Door Extenders (Door Buffer)** installed. Custom outward-offset hinges and perimeter spacers push the front acrylic doors outward past the frame boundary.
   - **Dock Clearance:** Provides the necessary clearance for the front-mounted StealthChanger docks ($Y \approx 1\text{--}2\text{ mm}$, $Z \approx 298\text{ mm}$) and carriage shuttle, preventing contact during toolchanges.
   - **Modular Dock Crossbar Mounting:** Because the door buffer extends the front enclosure forward, all Modular Docks mounted to the front 2020 crossbar strictly require **`Top_Crossbar.stl`** and **`Bottom_Crossbar.stl`** (from `DraftShift/ModularDock/STLs/Frame/2020/`). The stock `Top.stl` and `Bottom.stl` lack the extended drop/clamp geometry and must NOT be used.
