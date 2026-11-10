@@ -12,6 +12,8 @@ This repository contains the configuration, macro suite, and documentation for a
 >
 > **2. Always Follow Upstream First:** Strictly follow upstream repository patterns and design architecture (`jwellman80/klipper-toolchanger-easy`).
 > Always inspect and double-check what upstream does before making modifications. If an agent believes moving away from upstream is necessary, it MUST double-check upstream first, explain the exact technical rationale, and justify it clearly to the user for explicit approval before writing any code. Avoid custom snowflake macros or fragmented configs.
+>
+> **3. Public Repository Hygiene (`coreyhinkle/klipper-backup` is PUBLIC):** Every commit and `klipper-backup` run publishes directly to a public GitHub repository. Commit only hardware, firmware, and Klipper configuration data; audit staged diffs before pushing to confirm zero secrets, tokens, passwords, private keys, or personal credentials are included.
 
 ### Safe Config Deployment Protocol:
 1. **Pre-Flight Idle Gate (MANDATORY):** Before running `FIRMWARE_RESTART`, `RESTART`, or any G-code command, query Moonraker's `print_stats` and `idle_timeout` objects:
@@ -102,7 +104,7 @@ This repository contains the configuration, macro suite, and documentation for a
 
 - **Printer IP:** `192.168.0.46` (port 80 for Mainsail, port 7125 for Moonraker).
 - **SSH Access:** `ssh zyper@192.168.0.46` (passwordless key access configured).
-- **Documentation:** Full technical guides live in [`docs/`](docs/) (`hardware.md`, `toolchanger.md`, `benchmarks.md`, `troubleshooting.md`, `roadmap.md`).
+- **Documentation:** Full technical guides live in [`docs/`](docs/) (`hardware.md`, `toolchanger.md`, `benchmarks.md`, `troubleshooting.md`, `roadmap.md`, `VERSION_MANIFEST.md`).
 
 ---
 

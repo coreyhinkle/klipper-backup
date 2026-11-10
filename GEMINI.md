@@ -12,6 +12,8 @@ This file provides core operational rules, remote interaction protocols, and sys
 >
 > **Always Follow Upstream First:** Strictly follow upstream repository patterns and design architecture (`jwellman80/klipper-toolchanger-easy`).
 > Always inspect and double-check what upstream does before making modifications. If an agent believes moving away from upstream is necessary, it MUST double-check upstream first, explain the exact technical rationale, and justify it clearly to the user for explicit approval before writing any code. Avoid custom snowflake macros or fragmented configs.
+>
+> **Public Repository Hygiene (`coreyhinkle/klipper-backup` is PUBLIC):** Every commit and `klipper-backup` run publishes directly to a public GitHub repository. Commit only hardware, firmware, and Klipper configuration data; audit staged diffs before pushing to confirm zero secrets, tokens, passwords, private keys, or personal credentials are included.
 
 ### Configuration Modification Workflow:
 1. **Pre-Flight Idle Gate (MANDATORY):** Before running `FIRMWARE_RESTART`, `RESTART`, or any G-code command, query Moonraker's `print_stats` and `idle_timeout` objects (`curl -s "http://192.168.0.46:7125/printer/objects/query?print_stats&idle_timeout&extruder&extruder1&heater_bed"`) and verify `print_stats.state == "standby"` and `idle_timeout.state != "Printing"`. Never rely on `/printer/info` (`"state": "ready"`) alone to determine if a print is running.
@@ -36,7 +38,8 @@ For detailed technical specifications and data tables, consult the modular docum
 - **Hardware & Electronics:** See [`docs/hardware.md`](docs/hardware.md) for CM5 host specs, 24V power supply architecture & multi-tool budget, Manta M8P V2 wiring, CAN bus star topology, 60-ohm termination jumper settings, and toolhead specs.
 - **Kinematics & Speed Benchmarks:** See [`docs/benchmarks.md`](docs/benchmarks.md) for the empirical Z speed ladder data (15 to 80 mm/s), 24V back-EMF physics, top-dock 600mm travel math, stopwatch toolchange benchmarks, and QGL verification.
 - **Toolchanger Architecture:** See [`docs/toolchanger.md`](docs/toolchanger.md) for StealthChanger docking splines, park coordinates, macros, and operational conventions.
-- **Troubleshooting & Fixes:** See [`docs/troubleshooting.md`](docs/troubleshooting.md) for root-cause analyses on resolved toolchange bugs (offset doubling, premature pickup crash detection, and OptoTap cable drag).
+- **Troubleshooting & Fixes:** See [`docs/troubleshooting.md`](docs/troubleshooting.md) for root-cause analyses on resolved toolchange bugs (offset doubling, premature pickup crash detection, OptoTap cable drag, and `"Timer too close"` history).
+- **Software & Firmware Version Manifest:** See [`docs/VERSION_MANIFEST.md`](docs/VERSION_MANIFEST.md) and [`docs/versions.json`](docs/versions.json) for auto-tracked Klipper host/MCU firmware SHAs (`RECEIVE_WINDOW`), extension git commits, and historical version milestones.
 - **Tuning Roadmap & Audit:** See [`docs/roadmap.md`](docs/roadmap.md) for prioritized upcoming tasks and speed optimization targets.
 - **Workshop Inventory:** See [`/home/ai/workshop-inventory/AGENTS.md`](/home/ai/workshop-inventory/AGENTS.md) for filament stock, spare nozzles/hotends, fasteners, and workshop tools.
 
