@@ -68,6 +68,7 @@ This document tracks completed milestones, active tuning tasks, and future optim
   - [ ] **T3 (`yellow`) Assembly & Bring-Up:**
     - Assemble `T3` hardware, uncomment [`T3.cfg`](../printer_data/config/toolchanger/tools/T3.cfg), and repeat peripheral verification, PID, extruder calibration, dock parking, and Nudge offset calibration.
 - [ ] **Thermal / Electronics Cooling:** Install top-mount heatsink / active cooler on Raspberry Pi CM5 SoC. Revert/automate skirt fans in [`printer.cfg`](../printer_data/config/printer.cfg#L239-L251) (currently set to temporary `fan_generic` for manual cooling).
+- [ ] **Spoolman Filament Tracking Integration:** Deploy Spoolman on CM5 (`192.168.0.46`) and add `[spoolman]` to [`moonraker.conf`](../printer_data/config/moonraker.conf) for automated per-print filament weight deduction, syncing sequential spool IDs (`F-001`, etc.) with the workshop filament inventory.
 - [x] **Umbilical Management & Fanny Pack Suite (Top Frame & Rear):**
   - [x] **Printed & Mostly Installed:** DraftShift/N3MI **Voron 350 6-Tool Umbilical Plate** (`Voron350_Plate_6_Tools_Threaded_Version`) and **Fanny Pack** enclosure printed and mounted on the rear frame/crossbar over the upper exhaust opening. Houses ECAS04 PTFE collets, wire duct, and relief anchor slots.
   - [ ] **Umbilical Fabrication & Tension Tuning:** Finalize universal 350mm-length umbilicals (~740mm) using 0.3x3mm spring steel spines to eliminate OptoTap vertical drag and slack variance across all tools.
