@@ -47,6 +47,7 @@
 | **`[mcu green]`** | Toolhead 1 (T1 - Secondary, StealthBurner V6) | BTT EBB SB2209 CAN v1.0 (RP2040) | `rp2040` | `a7f6c7cc913a` | **`v0.13.0-800-g9cb99754`** | `192` |
 | **`[mcu cyan]`** | Toolhead 2 (T2 - Dragon Burner) | BTT EBB36 CAN v1.2 (STM32G0B1) | `stm32g0b1xx` | `108d45e46fd2` | **`v0.13.0-800-g9cb99754`** | `192` |
 | **`[mcu yellow]`** | Toolhead 3 (T3 - Dragon Burner, Standby/Unmounted) | BTT EBB36 CAN v1.2 (STM32G0B1) | `stm32g0b1xx` | `ce0655e3d001` | **`v0.13.0-800-g9cb99754`** | `192` |
+| **`[mcu hexa]`** | mcu hexa | Unknown | `stm32f072xb` | `` | **`v0.13.0-800-g9cb99754`** | `192` |
 
 ---
 

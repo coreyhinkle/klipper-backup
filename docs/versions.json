@@ -18,9 +18,7 @@
         "CONFIG_LOW_LEVEL_OPTIONS=y",
         "CONFIG_MACH_STM32=y",
         "CONFIG_MACH_STM32H723=y",
-        "CONFIG_STM32_CLOCK_REF_25M=y",
-        "CONFIG_STM32_USBCANBUS_PA11_PA12=y",
-        "CONFIG_STM32_CMENU_CANBUS_PD0_PD1=y"
+        "CONFIG_STM32_CLOCK_REF_25M=y"
       ],
       "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
       "mcu_version": "v0.13.0-800-g9cb99754",
@@ -59,6 +57,23 @@
       "mcu_version": "v0.13.0-800-g9cb99754",
       "receive_window": 192,
       "role": "Toolhead 1 (T1 - Secondary, StealthBurner V6)"
+    },
+    "mcu hexa": {
+      "board": "Unknown",
+      "canbus_uuid": "",
+      "chip": "stm32f072xb",
+      "clock_freq": 48000000,
+      "kconfig": [
+        "CONFIG_LOW_LEVEL_OPTIONS=y",
+        "CONFIG_MACH_STM32=y",
+        "CONFIG_MACH_STM32F072=y",
+        "CONFIG_STM32_CLOCK_REF_12M=y",
+        "CONFIG_STM32_USBCANBUS_PA11_PA12=y"
+      ],
+      "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
+      "mcu_version": "v0.13.0-800-g9cb99754",
+      "receive_window": 192,
+      "role": "mcu hexa"
     },
     "mcu purple": {
       "board": "BTT EBB SB2209 CAN v1.0 (RP2040)",
