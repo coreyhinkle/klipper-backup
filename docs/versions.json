@@ -76,8 +76,8 @@
       "role": "mcu hexa"
     },
     "mcu magenta": {
-      "board": "Unknown",
-      "canbus_uuid": "",
+      "board": "BTT EBB36 CAN v1.2 (STM32G0B1)",
+      "canbus_uuid": "fc8da1eddec9",
       "chip": "stm32g0b1xx",
       "clock_freq": 64000000,
       "kconfig": [
@@ -89,7 +89,7 @@
       "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
       "mcu_version": "v0.13.0-800-g9cb99754",
       "receive_window": 192,
-      "role": "mcu magenta"
+      "role": "Toolhead 3 (T3 - Dragon Burner, Bare-Board/Dock Staged)"
     },
     "mcu purple": {
       "board": "BTT EBB SB2209 CAN v1.0 (RP2040)",
@@ -122,7 +122,7 @@
       "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
       "mcu_version": "v0.13.0-800-g9cb99754",
       "receive_window": 192,
-      "role": "Toolhead 3 (T3 - Dragon Burner, Standby/Unmounted)"
+      "role": "Toolhead 4 (T4 - Dragon Burner, Standby/Bare-Board)"
     }
   },
   "software": {
