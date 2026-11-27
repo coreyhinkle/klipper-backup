@@ -75,6 +75,22 @@
       "receive_window": 192,
       "role": "mcu hexa"
     },
+    "mcu magenta": {
+      "board": "Unknown",
+      "canbus_uuid": "",
+      "chip": "stm32g0b1xx",
+      "clock_freq": 64000000,
+      "kconfig": [
+        "CONFIG_LOW_LEVEL_OPTIONS=y",
+        "CONFIG_MACH_STM32=y",
+        "CONFIG_MACH_STM32G0B1=y",
+        "CONFIG_STM32_MMENU_CANBUS_PB0_PB1=y"
+      ],
+      "mcu_build_versions": "gcc: (15:12.2.rel1-1) 12.2.1 20221205 binutils: (2.40-2+18+b1) 2.40",
+      "mcu_version": "v0.13.0-800-g9cb99754",
+      "receive_window": 192,
+      "role": "mcu magenta"
+    },
     "mcu purple": {
       "board": "BTT EBB SB2209 CAN v1.0 (RP2040)",
       "canbus_uuid": "4445b54fe351",
